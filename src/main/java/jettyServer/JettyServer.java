@@ -46,6 +46,8 @@ public class JettyServer {
         handler.addServlet(LoginServlet.class, "/login");
         handler.addServlet(LogoutServlet.class, "/logout");
         handler.addServlet(HotelServlet.class, "/hotels");
+        handler.addServlet(HotelDetailsServlet.class, "/hotelInfo");
+
 
 
         server.setHandler(handler);

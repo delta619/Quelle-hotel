@@ -2,14 +2,10 @@ package hotelapp;
 
 import com.google.gson.JsonObject;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-
 public class Review implements Comparable<Review> {
     private String hotelId;
     private String reviewId;
-    private int ratingOverall;
+    private double ratingOverall;
     private String title;
     private String reviewText;
     private String userNickname;
@@ -17,7 +13,7 @@ public class Review implements Comparable<Review> {
 
 //    private DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
 
-    public Review(String hotelId, String reviewId, int ratingOverall, String title, String reviewText, String userNickname, String reviewSubmissionDate){
+    public Review(String hotelId, String reviewId, double ratingOverall, String title, String reviewText, String userNickname, String reviewSubmissionDate){
         this.hotelId = hotelId;
         this.reviewId = reviewId;
         this.ratingOverall = ratingOverall;
@@ -64,7 +60,7 @@ public class Review implements Comparable<Review> {
 
     }
 
-    public int getRatingOverall() {
+    public double getRatingOverall() {
         return ratingOverall;
     }
 
@@ -82,6 +78,7 @@ public class Review implements Comparable<Review> {
         jsonObject.addProperty("title", this.getTitle());
         jsonObject.addProperty("hotelId", this.getHotelId());
         jsonObject.addProperty("user", this.getUserNickname());
+        jsonObject.addProperty("ratingOverall", this.getRatingOverall());
         jsonObject.addProperty("reviewText", this.getReviewText());
         jsonObject.addProperty("date", this.getReviewSubmissionDate());
         return jsonObject;

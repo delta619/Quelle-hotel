@@ -1,13 +1,9 @@
 package hotelapp;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class ReviewWithFreq implements Comparable<ReviewWithFreq> {
 

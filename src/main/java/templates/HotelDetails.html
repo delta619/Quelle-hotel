@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <title>Hotel Details</title>
+
+    <script>
+        // show reviews for the hotel created in tabular form
+        // show the reviewid review text and the rating
+        // show the average rating for the hotel
+        // show the number of reviews for the hotel
+
+
+    </script>
+    <style>
+        .container {
+            margin-top: 50px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="jumbotron text-center">
+    <h2>$hotelData.name </h2>
+    <h3>Address -$hotelData.addr</h3>
+    <h3>Avg. Rating - $hotelData.avgRating</h3>
+    <a href=$hotelData.link>Expedia link</a>
+    #if($loggedUser != "anonymous")
+    <h5>Hello, $loggedUser </h5>
+    #end
+</div>
+
+<div class="container">
+<!--    <div class="row">-->
+<!--        <img src="$hotelData.link?pwaDialogNested=media-gallery&pwaThumbnailDialog=thumbnail-gallery" alt="">-->
+<!--    </div>-->
+
+    <table class="table table-striped" id="hotelTable">
+
+        <thead>
+        <tr>
+            <th>Review ID</th>
+            <th>Review Text</th>
+            <th>Rating</th>
+        </tr>
+        </thead>
+        <tbody>
+        #foreach($review in $reviews)
+        <tr>
+            <td>$review.reviewId</td>
+            <td>$review.reviewText</td>
+            <td>$review.ratingOverall</td>
+        </tr>
+        #end
+        </tbody>
+    </table>
+
+
+</div>
+
+
+</body>
+</html>
