@@ -7,7 +7,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script>
-        // onclick
         function logout() {
             $.ajax({
                 url: "/logout",
@@ -17,15 +16,16 @@
                 }
             });
         }
-        // hit an api for findHotels and display the results
-        // disbale the button findHotels after click untill response
-        // enable the button findHotels after response
-        // show loading image while waiting for response
 
-        // send ajax request to /hotel?sub=hotelText
-        // get the response and display it in the table
-        // if no hotels found display "No hotels found"
-        // if error display "Error occured"
+<!--        event listener on the table row except first row to extract the hotel id of that row-->
+
+        $(document).ready(function () {
+            $("#hotelTable").on("click", "tr", function () {
+                var hotelId = $(this).find("td").eq(0).html();
+                window.location.href = "/hotelInfo?hotelId=" + hotelId;
+            });
+        });
+
 
         function findHotels(){
             var hotelText = document.getElementById("hotelText").value;
@@ -35,6 +35,8 @@
                 success: function (data) {
                     var table = document.getElementById("hotelTable");
                     table.innerHTML = "";
+                    document.getElementById("hotelTable").removeAttribute("hidden");
+
                     if(data.success == false){
                         table.innerHTML = "No hotels found";
                     }else{
@@ -59,12 +61,49 @@
         }
 
     </script>
+    <style>
+        #hotelTable {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        #hotelTable td, #hotelTable th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        #hotelTable tr:nth-child(even){background-color: #f2f2f2;}
+        #hotelTable tr:hover {background-color: #ddd;}
+        #hotelTable tr {cursor: pointer;}
+        #hotelTable th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #aaa;
+            color: #eee;
+
+        }
+    </style>
 </head>
 <body>
 
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/home">MyTravelAdvisor</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li><a href="/home">Home</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="/logout" ><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+
 <div class="jumbotron text-center">
-    <h1>Hello Prof. Olga </h1>
-    #if($loggedUser != "anonymous")
+    <h1>WELCOME </h1>
+    #if($loggedUser != "Anonymous")
       <h5>Hello, $loggedUser </h5>
     #end
 </div>
@@ -72,8 +111,9 @@
 
     <div class="row">
         <label for="findHotels">Find Hotels:</label>
-        <input type="text" id = "hotelText" placeholder="Enter hotel text" width="200px">
-        <input type="button" id = "findHotels" class="btn btn-primary" value="findHotels" onclick="findHotels()">
+<!--        add enter key event -->
+        <input type="text" id = "hotelText" placeholder="Enter hotel text" width="200px" onkeyup="if(event.keyCode == 13) findHotels()">
+        <input type="button" id = "findHotels" class="btn btn-primary" value="Find Hotels"  onclick="findHotels()">
     </div>
 
     <div class="row">

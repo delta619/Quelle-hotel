@@ -92,6 +92,8 @@ public class Helper {
         public static final String HOME = "./src/main/java/templates/Home.html";
         public static final String HOTEL_DETAILS = "./src/main/java/templates/HotelDetails.html";
 
+        public static final String EDIT_REVIEW = "./src/main/java/templates/EditReview.html";
+
         public static final String LOGIN = "./src/main/java/templates/Login.html";
         public static final String LOGIN_FAILED = "./src/main/java/templates/LoginFailed.html";
 

@@ -1,6 +1,7 @@
 package hotelapp;
 
 import com.google.gson.JsonArray;
+import org.eclipse.jetty.server.PushBuilder;
 
 import java.util.ArrayList;
 import java.util.TreeSet;
@@ -29,10 +30,49 @@ public class ThreadSafeReviewHandler extends ReviewHandler {
     }
 
     @Override
+    public boolean updateReview(String hotelId, String reviewId, String reviewTitle, String reviewText){
+        try{
+            lock.writeLock().lock();
+            return super.updateReview(hotelId, reviewId, reviewTitle, reviewText);
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+    @Override
+    public Review findReviewUsingHotelIdAndReviewId(String hotelId, String reviewId){
+        try{
+            lock.readLock().lock();
+            return super.findReviewUsingHotelIdAndReviewId(hotelId, reviewId);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public void insertReview(String title, String reviewText, String hotelId, String reviewId, String nickname, String date){
+        try{
+            lock.writeLock().lock();
+            super.insertReview(title, reviewText, hotelId, reviewId, nickname, date);
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    @Override
     public void setUpWords(){
         try{
             lock.writeLock().lock();
             super.setUpWords();
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    @Override
+    public boolean deleteReview(String hotelId, String reviewId){
+        try{
+            lock.writeLock().lock();
+            return super.deleteReview(hotelId, reviewId);
         } finally {
             lock.writeLock().unlock();
         }

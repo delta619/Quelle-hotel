@@ -22,7 +22,6 @@ public class HotelHandler {
     }
 
     public JsonArray findHotelsUsingSubstring(String subString){
-        System.out.println("Searching for hotels with name containing: " + subString);
     JsonArray hotels = new JsonArray();
         for(Hotel hotel: this.hotelMap.values()){
             if(hotel.getName().toLowerCase().contains(subString.toLowerCase()) || subString.isBlank()){

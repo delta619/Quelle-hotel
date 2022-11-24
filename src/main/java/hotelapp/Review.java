@@ -65,11 +65,20 @@ public class Review implements Comparable<Review> {
     }
 
     public String getTitle() {
+        if(this.title.isEmpty()){
+            return "NA";
+        }
         return title;
     }
 
     public String getReviewText() {
         return this.reviewText;
+    }
+    public void setReviewText(String reviewText){
+        this.reviewText = reviewText;
+    }
+    public void setReviewTitle(String title){
+        this.title = title;
     }
 
     public JsonObject toJson(){

@@ -27,6 +27,25 @@ public class ReviewHandler {
             this.hotelReviewMap.get(review.getHotelId()).add(review);
         }
     }
+    public void insertReview(String title, String reviewText, String hotelId, String reviewId, String nickname, String date){
+        Review review = new Review(hotelId, reviewId, 5,  title, reviewText, nickname, date);
+        if (!hotelReviewMap.containsKey(review.getHotelId())) {
+            TreeSet<Review> temp = new TreeSet<>(new Comparator<Review>() {
+                @Override
+                public int compare(Review r1, Review r2) {
+                    if(r1.getReviewSubmissionDate().equals(r2.getReviewSubmissionDate())){
+                        return r1.getReviewId().compareTo(r2.getReviewId());
+                    }
+                    return r2.getReviewSubmissionDate().compareTo(r1.getReviewSubmissionDate());
+                }
+            });
+            this.hotelReviewMap.put(review.getHotelId(), temp);
+        }
+        this.hotelReviewMap.get(review.getHotelId()).add(review);
+        System.out.println("Review added successfully" + review.toString());
+
+
+    }
     public void setUpWords(){
         HashSet<String> stopWords = getStopWords();
         for (String hotelId: hotelReviewMap.keySet()){
@@ -150,4 +169,43 @@ public class ReviewHandler {
         }
     }
 
+    public Review findReviewUsingHotelIdAndReviewId(String hotelId, String reviewId) {
+        if (hotelReviewMap.containsKey(hotelId)) {
+            TreeSet<Review> reviews = hotelReviewMap.get(hotelId);
+            for (Review review : reviews) {
+                if (review.getReviewId().equals(reviewId)) {
+                    return review;
+                }
+            }
+        }
+        return null;
+    }
+    public boolean deleteReview(String hotelId, String reviewId) {
+        if (hotelReviewMap.containsKey(hotelId)) {
+            TreeSet<Review> reviews = hotelReviewMap.get(hotelId);
+            for (Review review : reviews) {
+                if (review.getReviewId().equals(reviewId)) {
+                    reviews.remove(review);
+                    System.out.println("Review " + reviewId + " deleted successfully");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean updateReview(String hotelId, String reviewId, String reviewTitle, String reviewText) {
+        if (hotelReviewMap.containsKey(hotelId)) {
+            TreeSet<Review> reviews = hotelReviewMap.get(hotelId);
+            for (Review review : reviews) {
+                if (review.getReviewId().equals(reviewId)) {
+                    review.setReviewText(reviewText);
+                    review.setReviewTitle(reviewTitle);
+
+                    System.out.println("Review " + reviewId + " updated successfully");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
