@@ -14,6 +14,11 @@ public class Queries {
             "INSERT INTO users (username, password, usersalt) " +
                     "VALUES (?, ?, ?);";
 
+    public static final String CHECK_EXISTING_USER_SQL =
+            "SELECT username, password, usersalt FROM users WHERE username = ?";
+
+    public static final String LOGIN_SQL =
+            "SELECT username FROM users WHERE username = ? AND password = ?";
 
     /** Used to determine if a username already exists. */
     private static final String USER_SQL =

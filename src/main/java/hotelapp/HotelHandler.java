@@ -1,5 +1,6 @@
 package hotelapp;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.util.*;
@@ -18,6 +19,19 @@ public class HotelHandler {
 
         Hotel hotel = this.hotelMap.get(hotelId);
         return hotel;
+    }
+
+    public JsonArray findHotelsUsingSubstring(String subString){
+        System.out.println("Searching for hotels with name containing: " + subString);
+    JsonArray hotels = new JsonArray();
+        for(Hotel hotel: this.hotelMap.values()){
+            if(hotel.getName().toLowerCase().contains(subString.toLowerCase()) || subString.isBlank()){
+                JsonObject hotelJson = this.getHotelInfoJson(hotel.getId());
+                hotels.add(hotelJson);
+            }
+        }
+        return hotels;
+
     }
     public JsonObject getHotelInfoJson(String hotelId){
         JsonObject jsonObject  = new JsonObject();

@@ -54,7 +54,24 @@ public class RegisterServlet extends HttpServlet {
         DatabaseHandler dhandler = DatabaseHandler.getInstance();
 
         // insert user into database
-        dhandler.registerUser(username, password);
+
+        try {
+            dhandler.registerUser(username, password);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
+            VelocityContext context = new VelocityContext();
+
+            context.put("error", e.getMessage());
+            Template template = ve.getTemplate(Helper.CONSTANTS.REGISTER_FAILED);
+
+            StringWriter writer = new StringWriter();
+
+            template.merge(context, writer);
+
+            out.println(writer.toString());
+            return;
+        }
 
         HttpSession session = request.getSession();
         session.setAttribute("loggedUser", username);

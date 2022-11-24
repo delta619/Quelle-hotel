@@ -94,7 +94,11 @@ public class DatabaseHandler {
      * @param newuser - username of new user
      * @param newpass - password of new user
      */
-    public void registerUser(String newuser, String newpass) {
+    public void registerUser(String newuser, String newpass) throws Exception{
+        //check if password has length > 8 and has one special character
+        if (!newpass.matches(".*[!@#$%^&*()_+].*") || newpass.length() < 8) {
+            throw new Exception("Password must be 8 or more characters long with a special character");
+        }
         // Generate salt
         byte[] saltBytes = new byte[16];
         random.nextBytes(saltBytes);
@@ -107,6 +111,15 @@ public class DatabaseHandler {
         try (Connection connection = DriverManager.getConnection(uri, username, password)) {
             System.out.println("dbConnection successful");
             try {
+                statement = connection.prepareStatement(Queries.CHECK_EXISTING_USER_SQL);
+                statement.setString(1, newuser);
+                ResultSet rs = statement.executeQuery();
+                if (rs.next()) {
+                    System.out.println("User already exists");
+                    throw new Exception("User already exists");
+                }
+
+                // insert
                 statement = connection.prepareStatement(Queries.REGISTER_SQL);
                 statement.setString(1, newuser);
                 statement.setString(2, passhash);
@@ -123,7 +136,60 @@ public class DatabaseHandler {
         }
 
     }
+    public void loginUser(String user_input, String pass_input) throws Exception {
+        byte[] saltBytes = new byte[16];
+        random.nextBytes(saltBytes);
 
+        String usersalt ;
+//                = encodeHex(saltBytes, 32); // salt
+        String passhash ;
+//                = getHash(password, usersalt); // hashed password
+
+        PreparedStatement statement;
+        try (Connection connection = DriverManager.getConnection(uri, username, password)) {
+            System.out.println("dbConnection successful");
+            try {
+                //check if user exists
+                statement = connection.prepareStatement(Queries.CHECK_EXISTING_USER_SQL);
+                statement.setString(1, user_input);
+                ResultSet rs = statement.executeQuery();
+                if (!rs.next()) {
+                    System.out.println("User does not exist");
+                    throw new Exception("User does not exist");
+                }   else{
+                    // print out the user's password hash and salt
+                    System.out.println("User: " + rs.getString("username"));
+
+                    passhash = rs.getString("password");
+                    System.out.println("Password Hash: " + passhash);
+
+
+                    usersalt = rs.getString("usersalt");
+                    System.out.println("Salt: " + usersalt);
+                }
+
+                //check if password is correct by creating verifyPassHash
+                String verifyPassHash = getHash(pass_input, usersalt);
+
+                statement = connection.prepareStatement(Queries.LOGIN_SQL);
+                statement.setString(1, user_input);
+                statement.setString(2, verifyPassHash);
+                ResultSet rs2 = statement.executeQuery();
+                if (rs2.next()) {
+                    System.out.println(username + " : Login successful");
+                }
+                else {
+                    System.out.println(username + " : Incorrect password");
+                    throw new Exception("Incorrect password");
+                }
+            }
+            catch(SQLException e) {
+                System.out.println(e);
+                throw new Exception(e.getMessage());
+            }
+
+        }
+    }
 //    public static void main(String[] args) {
 //        DatabaseHandler dhandler = DatabaseHandler.getInstance();
 //        dhandler.createTable();

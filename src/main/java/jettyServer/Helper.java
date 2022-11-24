@@ -91,7 +91,10 @@ public class Helper {
     static class CONSTANTS{
         public static final String HOME = "./src/main/java/templates/Home.html";
         public static final String LOGIN = "./src/main/java/templates/Login.html";
+        public static final String LOGIN_FAILED = "./src/main/java/templates/LoginFailed.html";
+
         public static final String REGISTER = "./src/main/java/templates/Register.html";
+        public static final String REGISTER_FAILED = "./src/main/java/templates/RegisterFailed.html";
 
 
     }

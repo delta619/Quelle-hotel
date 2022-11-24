@@ -23,13 +23,14 @@ public class HomeServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
         String username = (String) session.getAttribute("loggedUser");
-        if(username == null){
-            response.sendRedirect("/register");
-        }
+
+//        if(username == null){
+//            response.sendRedirect("/register");
+//        }
 
         VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
         VelocityContext context = new VelocityContext();
-        context.put("loggedUser", username);
+        context.put("loggedUser", "texttttyy"); //Todo: replace the username with the actual username
         Template template = ve.getTemplate(Helper.CONSTANTS.HOME);
 
         StringWriter writer = new StringWriter();
