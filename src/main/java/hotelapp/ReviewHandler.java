@@ -198,9 +198,9 @@ public class ReviewHandler {
             TreeSet<Review> reviews = hotelReviewMap.get(hotelId);
             for (Review review : reviews) {
                 if (review.getReviewId().equals(reviewId)) {
-                    review.setReviewText(reviewText);
-                    review.setReviewTitle(reviewTitle);
-
+                    Review newReview = new Review(hotelId, reviewId, review.getRatingOverall(), reviewTitle, reviewText, review.getUserNickname(), review.getReviewSubmissionDate());
+                    reviews.remove(review);
+                    reviews.add(newReview);
                     System.out.println("Review " + reviewId + " updated successfully");
                     return true;
                 }
