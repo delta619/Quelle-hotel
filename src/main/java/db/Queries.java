@@ -20,16 +20,4 @@ public class Queries {
     public static final String LOGIN_SQL =
             "SELECT username FROM users WHERE username = ? AND password = ?";
 
-    /** Used to determine if a username already exists. */
-    private static final String USER_SQL =
-            "SELECT username FROM login_users WHERE username = ?";
-
-    /** Used to retrieve the salt associated with a specific user. */
-    private static final String SALT_SQL =
-            "SELECT usersalt FROM login_users WHERE username = ?";
-
-    /** Used to authenticate a user. */
-    private static final String AUTH_SQL =
-            "SELECT username FROM login_users " +
-                    "WHERE username = ? AND password = ?";
 }
