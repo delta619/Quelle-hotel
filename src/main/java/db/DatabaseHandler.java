@@ -1,11 +1,8 @@
 package db;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.sql.*;
-import java.util.Properties;
 import java.util.Random;
 
 
@@ -129,10 +126,14 @@ public class DatabaseHandler {
             }
             catch(SQLException e) {
                 System.out.println(e);
+                throw new Exception("Something went wrong");
+
             }
         }
         catch (SQLException ex) {
             System.out.println(ex);
+            throw new Exception("Error connecting to server");
+
         }
 
     }

@@ -1,5 +1,5 @@
 package jettyServer;
-
+import java.util.UUID;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import hotelapp.Hotel;
@@ -108,20 +108,18 @@ public class HotelDetailsServlet extends HttpServlet {
         String hotelId = request.getParameter("hotelId");
         String reviewText = request.getParameter("reviewText");
         String reviewTitle = request.getParameter("reviewTitle");
-        String reviewId = request.getParameter("reviewId");
 
 
         hotelId = StringEscapeUtils.escapeHtml4(hotelId);
         reviewText = StringEscapeUtils.escapeHtml4(reviewText);
         reviewTitle = StringEscapeUtils.escapeHtml4(reviewTitle);
-        reviewId = StringEscapeUtils.escapeHtml4(reviewId);
 
         if(hotelId == null){
             out.println(Helper.hotelResponseGenerator(false, null));
             return;
         }
-
-        reviewData.insertReview(reviewTitle, reviewText, hotelId, reviewId, loggedUser, new Date().toString());
+        String uuid = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
+        reviewData.insertReview(reviewTitle, reviewText, hotelId, uuid, loggedUser, new Date().toString());
 
         response.sendRedirect("/hotelInfo?hotelId=" + hotelId);
 

@@ -56,7 +56,7 @@ public class EditReview extends HttpServlet {
         }
 
         if(!review.getUserNickname().equals(loggedUser)){
-            response.sendRedirect("/home");  // TODO: redirect to error page
+            response.sendRedirect("/home");
         }
 
         VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
@@ -101,7 +101,7 @@ public class EditReview extends HttpServlet {
             response.sendRedirect("/register");
         }
         if(!reviewData.findReviewUsingHotelIdAndReviewId(hotelId, reviewId).getUserNickname().equals(loggedUser)){
-            response.sendRedirect("/home");  // TODO: redirect to error page
+            response.sendRedirect("/home");
         }
 
         if (reviewId == null || hotelId == null) {
@@ -114,7 +114,7 @@ public class EditReview extends HttpServlet {
             if(result){
                 response.sendRedirect("/hotelInfo?hotelId=" + hotelId);
             } else {
-                response.sendRedirect("/home"); // TODO: redirect to error page
+                response.sendRedirect("/home");
             }
         }
         if(request.getParameter("save") != null){
@@ -123,7 +123,7 @@ public class EditReview extends HttpServlet {
             if(result){
                 response.sendRedirect("/hotelInfo?hotelId=" + hotelId);
             } else {
-                response.sendRedirect("/home"); // TODO: redirect to error page
+                response.sendRedirect("/home");
             }
         }
 

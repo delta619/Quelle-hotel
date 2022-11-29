@@ -30,7 +30,7 @@ public class HomeServlet extends HttpServlet {
 
         VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
         VelocityContext context = new VelocityContext();
-        context.put("loggedUser", loggedUser); //Todo: replace the username with the actual username
+        context.put("loggedUser", loggedUser);
         Template template = ve.getTemplate(Helper.CONSTANTS.HOME);
 
         StringWriter writer = new StringWriter();

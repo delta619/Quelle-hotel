@@ -48,8 +48,8 @@ public class RegisterServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        out.println("username: " + username);
-        out.println("password: " + password);
+//        out.println("username: " + username);
+//        out.println("password: " + password);
 
         DatabaseHandler dhandler = DatabaseHandler.getInstance();
 

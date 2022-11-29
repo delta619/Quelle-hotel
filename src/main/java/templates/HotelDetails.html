@@ -77,10 +77,10 @@
                 <h3>Add a review</h3>
 
                 <form action="/hotelInfo?hotelId=$hotelId" method="post">
-                    <div class="form-group">
-                        <label for="reviewId">Review Id:</label>
-                        <input type="text" class="form-control" id="reviewId" name="reviewId">
-                    </div>
+<!--                    <div class="form-group">-->
+<!--                        <label for="reviewId">Review Id:</label>-->
+<!--                        <input type="text" class="form-control" id="reviewId" name="reviewId">-->
+<!--                    </div>-->
                     <div class="form-group">
                         <label for="reviewTitle">Review Title:</label>
                         <input type="text" class="form-control" id="reviewTitle" name="reviewTitle">
@@ -108,7 +108,6 @@
             <th>Review ID</th>
             <th>Review Title</th>
             <th>Review Text</th>
-            <th>Rating</th>
             <th>User</th>
 
         </tr>
@@ -117,15 +116,17 @@
         #foreach($review in $reviews)
         <tr>
             <td>$review.getReviewId()</td>
-            <td>$review.getTitle()</td>
+            <td>
+                #if($loggedUser == $review.getUserNickname())
+                    <span  data-toggle="tooltip" data-placement="top" title="Edit review" style="cursor:pointer;"><a href="/editReview?reviewId=$review.getReviewId()&hotelId=$hotelId"><span class="glyphicon glyphicon-pencil" ></span></a></span>
+                #end
+                $review.getTitle()
+            </td>
 
             <td>$review.getReviewText()</td>
-            <td>$review.getRatingOverall()</td>
-            #if($loggedUser == $review.getUserNickname())
-                <td style="cursor:pointer;"><a href="/editReview?reviewId=$review.getReviewId()&hotelId=$hotelId"><span class="glyphicon glyphicon-pencil" ></span></a></td>
-            #else
-                <td>$review.getUserNickname()</td>
-            #end
+<!--            <td>$review.getRatingOverall()</td>-->
+
+            <td>$review.getUserNickname()</td>
 
 
 <!--            <td><span class="glyphicon glyphicon-pencil" ></span></td>-->
