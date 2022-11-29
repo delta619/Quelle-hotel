@@ -9,7 +9,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 /** This class uses Jetty & servlets to implement server serving hotel and review info */
 public class JettyServer {
     // FILL IN CODE
-    private static final int PORT = 8090;
+    private static final int PORT = 8080;
 
     /**
      * Function that starts the server
