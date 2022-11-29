@@ -67,6 +67,7 @@ public class HotelDetailsServlet extends HttpServlet {
             sumRating += review.getRatingOverall();
         }
         avgRating = sumRating / Math.max(1, reviews.size());
+        avgRating = Math.round(avgRating * 100.0) / 100.0;
 
 
         VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
