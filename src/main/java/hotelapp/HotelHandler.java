@@ -74,4 +74,9 @@ public class HotelHandler {
         System.out.println(result);
 
     }
+
+    public ArrayList<Hotel> getAllHotels(){
+        ArrayList<Hotel> hotels = new ArrayList<>(this.hotelMap.values());
+        return hotels;
+    }
 }

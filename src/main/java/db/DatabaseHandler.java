@@ -1,5 +1,6 @@
 package db;
 
+import javax.swing.plaf.nimbus.State;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.sql.*;
@@ -35,18 +36,67 @@ public class DatabaseHandler {
     }
 
 
-    public void createTable() {
+    public void CreateTables() {
         Statement statement;
         try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
-            System.out.println("dbConnection successful");
+            System.out.println("CREATING TABLES");
+
             statement = dbConnection.createStatement();
-            statement.executeUpdate(Queries.CREATE_USER_TABLE);
+            statement.executeUpdate(Queries.CREATE_HOTEL_TABLE);
+
+            statement = dbConnection.createStatement();
+            statement.executeUpdate(Queries.CREATE_REVIEW_TABLE);
         }
         catch (SQLException ex) {
             System.out.println(ex);
         }
     }
 
+    public void addHotel(String hotels) {
+        Statement statement = null;
+
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            System.out.println("INSERTING HOTELS");
+
+            statement = dbConnection.createStatement();
+            statement.executeUpdate(Queries.INSERT_HOTEL_DATA + hotels + ";");
+
+        }
+        catch (SQLException ex) {
+            System.out.println(statement.toString());
+            System.out.println(ex);
+        }
+    }
+
+    public void addReview(String reviews) {
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            Statement statement = dbConnection.createStatement();
+            System.out.println("INSERTING REVIEWS");
+            statement.executeUpdate(Queries.INSERT_REVIEW_DATA + reviews + ";");
+
+        }
+        catch (SQLException ex) {
+            System.out.println(ex);
+        }
+
+    }
+
+
+    public void removeAllTables(){
+        Statement statement;
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            System.out.println("initial dbConnection successful");
+
+            statement = dbConnection.createStatement();
+            statement.executeUpdate(Queries.DROP_HOTEL_TABLE);
+
+            statement = dbConnection.createStatement();
+            statement.executeUpdate(Queries.DROP_REVIEW_TABLE);
+        }
+        catch (SQLException ex) {
+            System.out.println(ex);
+        }
+    }
     /**
      * Returns the hex encoding of a byte array.
      *

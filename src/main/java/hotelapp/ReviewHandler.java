@@ -208,4 +208,12 @@ public class ReviewHandler {
         }
         return false;
     }
+
+    public ArrayList<Review> getAllReviews(){
+        ArrayList<Review> reviews = new ArrayList<>();
+        for(String hotelId: hotelReviewMap.keySet()){
+            reviews.addAll(hotelReviewMap.get(hotelId));
+        }
+        return reviews;
+    }
 }

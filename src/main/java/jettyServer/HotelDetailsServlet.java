@@ -31,9 +31,9 @@ public class HotelDetailsServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
         String loggedUser = (String) session.getAttribute("loggedUser");
-        if(loggedUser == null){
-            response.sendRedirect("/register");
-        }
+//        if(loggedUser == null){
+//            response.sendRedirect("/register");
+//        }
 
 
         ThreadSafeHotelHandler hotelData = (ThreadSafeHotelHandler) getServletContext().getAttribute("hotelController");
@@ -44,8 +44,11 @@ public class HotelDetailsServlet extends HttpServlet {
 
         PrintWriter out = response.getWriter();
         String hotelId = request.getParameter("hotelId");
+        String pageNo = request.getParameter("page");
+
 
         hotelId = StringEscapeUtils.escapeHtml4(hotelId);
+        pageNo = StringEscapeUtils.escapeHtml4(pageNo);
 
         if(hotelId == null){
             out.println(Helper.hotelResponseGenerator(false, null));
@@ -81,9 +84,29 @@ public class HotelDetailsServlet extends HttpServlet {
         context.put("link", "https://www.expedia.com/" + hotelDetails.getCity() + "-Hotels-" + hotelDetails.getName()+ ".h" + hotelId + ".Hotel-Information");
         context.put("city", hotelDetails.getCity());
 
+        if(pageNo == null){
+            pageNo = "1";
 
-        context.put("reviews", reviews);
+        }
 
+        // segregate reviews into pages
+        int page = Integer.parseInt(pageNo);
+        int pageSize = 5;
+        int totalReviews = reviews.size();
+        int totalPages = (int) Math.ceil((double) totalReviews / pageSize);
+        int start = (page - 1) * pageSize;
+        int end = Math.min(start + pageSize, totalReviews);
+
+
+        ArrayList<Review> reviewsList = new ArrayList<>(reviews);
+        ArrayList<Review> reviewsPage = new ArrayList<>(reviewsList.subList(start, end));
+
+
+
+        // get reviews from start to end
+
+        context.put("reviews", reviewsPage);
+        context.put("totalPages", totalPages);
         Template template = ve.getTemplate(Helper.CONSTANTS.HOTEL_DETAILS);
 
         StringWriter writer = new StringWriter();
@@ -97,8 +120,12 @@ public class HotelDetailsServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String loggedUser = (String) session.getAttribute("loggedUser");
         if(loggedUser == null){
-            response.sendRedirect("/register");
+            loggedUser = "Anonymous";
         }
+
+//        if(loggedUser == null){
+//            response.sendRedirect("/register");
+//        }
 
         ThreadSafeHotelHandler hotelData = (ThreadSafeHotelHandler) getServletContext().getAttribute("hotelController");
         ThreadSafeReviewHandler reviewData = (ThreadSafeReviewHandler) getServletContext().getAttribute("reviewController");

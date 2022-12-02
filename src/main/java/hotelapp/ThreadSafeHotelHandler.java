@@ -58,4 +58,14 @@ public class ThreadSafeHotelHandler extends HotelHandler {
             this.lock.readLock().unlock();
         }
     }
+
+    @Override
+    public  ArrayList<Hotel> getAllHotels(){
+        try {
+            this.lock.readLock().lock();
+            return super.getAllHotels();
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
 }

@@ -24,9 +24,9 @@ public class HomeServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String loggedUser = (String) session.getAttribute("loggedUser");
 
-        if(loggedUser == null){
-            response.sendRedirect("/register");
-        }
+//        if(loggedUser == null){
+//            response.sendRedirect("/register");
+//        }
 
         VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
         VelocityContext context = new VelocityContext();

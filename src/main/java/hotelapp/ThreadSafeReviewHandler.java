@@ -118,5 +118,15 @@ public class ThreadSafeReviewHandler extends ReviewHandler {
         }
     }
 
+    @Override
+    public ArrayList<Review> getAllReviews(){
+        try{
+            lock.readLock().lock();
+            return super.getAllReviews();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
 
 }
