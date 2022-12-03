@@ -18,8 +18,9 @@ public class UserActionsServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
+        String loggedUser = (String) session.getAttribute("loggedUser");
 
-        String loggedUser = "ash";
+        loggedUser = "ash";
 
         DatabaseHandler db = (DatabaseHandler) getServletContext().getAttribute("dbController");
 
@@ -72,6 +73,9 @@ public class UserActionsServlet extends HttpServlet {
                 weatherJson.addProperty("temperature", weatherInfo[0]);
                 weatherJson.addProperty("windspeed", weatherInfo[1]);
                 out.println(Helper.userSuccessResponseGenerator(weatherJson));
+            } else if ("removeAllFavHotels".equals(action)) {
+                db.removeAllFavourites(loggedUser);
+                out.println(Helper.userSuccessResponseGenerator(null));
             }
         }
         catch (Exception e){
@@ -82,7 +86,6 @@ public class UserActionsServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     }
-
     public String[] getWeatherInfo(String latitude, String longitude) {
         PrintWriter out = null;
         BufferedReader in = null;

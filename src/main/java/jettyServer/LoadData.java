@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.StringJoiner;
 
 public class LoadData extends HttpServlet {
@@ -52,7 +51,7 @@ public class LoadData extends HttpServlet {
 //            System.out.println(query);
             sj.add(query);
         }
-        db.addReview(sj.toString());
+        db.loadReviews(sj.toString());
 
     response.getWriter().println("Data loaded");
 

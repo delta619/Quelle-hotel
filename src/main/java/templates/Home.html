@@ -84,11 +84,16 @@
         <div class="col-lg-3">
             #if ($favHotels.size() > 0)
             <ul id="favHotels">
-                <h3>Favourites</h3>
+                 <span> <h3>Favourites <span style="cursor: pointer" class="glyphicon glyphicon-remove" onclick="removeAllFavHotels()"> </span></h3>
+
+            </span>
                 #foreach($hotel in $favHotels)
                     <a href="/hotelInfo?hotelId=$hotel.id"><li id="$hotel.id">$hotel.name</li></a>
                 #end
+
             </ul>
+
+
             #else
                 <h3>No Favourites</h3>
             #end
@@ -99,6 +104,39 @@
     </div>
 </div>
 <script>
+
+        function removeAllFavHotels(){
+
+            var r = confirm("Are you sure you want to remove all favourite hotels?");
+            if (r == true) {
+                    fetch("/userActions?action=removeAllFavHotels", {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                }).then(function (response) {
+                    return response.json();
+                }).then(function (data) {
+                    console.log(data);
+                    if(data.success){
+                    // remove list items
+                    var list = document.getElementById("favHotels");
+                    while (list.hasChildNodes()) {
+                        list.removeChild(list.firstChild);
+                    }
+                    // add no favourites
+                    var noFav = document.createElement("h3");
+                    noFav.innerHTML = "No Favourites";
+                    list.appendChild(noFav);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
+        }
+
+
         function logout() {
             fetch('/logout', {method :'get'}).
             then(data => {
@@ -145,6 +183,7 @@
             });
 
         }
+        findHotels();
 
     </script>
 

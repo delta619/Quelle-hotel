@@ -3,8 +3,6 @@ package jettyServer;
 import db.DatabaseHandler;
 import hotelapp.Hotel;
 import hotelapp.Review;
-import hotelapp.ThreadSafeHotelHandler;
-import hotelapp.ThreadSafeReviewHandler;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -37,20 +35,16 @@ public class EditReview extends HttpServlet {
         hotelId = StringEscapeUtils.escapeHtml4(hotelId);
 
 
-        System.out.println("ReviewId: " + reviewId);
-        System.out.println("HotelId: " + hotelId);
+        DatabaseHandler db = (DatabaseHandler) getServletContext().getAttribute("dbController");
 
-
-        ThreadSafeHotelHandler hotelData = (ThreadSafeHotelHandler) getServletContext().getAttribute("hotelController");
-        ThreadSafeReviewHandler reviewData = (ThreadSafeReviewHandler) getServletContext().getAttribute("reviewController");
 
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
         PrintWriter out = response.getWriter();
 
 
-        Hotel hotel = hotelData.findHotelId(hotelId);
-        Review review = reviewData.findReviewUsingHotelIdAndReviewId(hotelId, reviewId);
+        Hotel hotel = db.getHotel(hotelId);
+        Review review = db.getReviewUsingReviewId(reviewId);
 
         if(review == null){
             response.sendRedirect("/home");
@@ -89,7 +83,8 @@ public class EditReview extends HttpServlet {
         String hotelId = request.getParameter("hotelId");
         String reviewTitle = request.getParameter("reviewTitle");
         String reviewText = request.getParameter("reviewText");
-        ThreadSafeReviewHandler reviewData = (ThreadSafeReviewHandler) getServletContext().getAttribute("reviewController");
+        DatabaseHandler db = (DatabaseHandler) getServletContext().getAttribute("dbController");
+        PrintWriter out = response.getWriter();
 
         reviewId = StringEscapeUtils.escapeHtml4(reviewId);
         hotelId = StringEscapeUtils.escapeHtml4(hotelId);
@@ -101,7 +96,7 @@ public class EditReview extends HttpServlet {
         if(loggedUser == null){
             response.sendRedirect("/register");
         }
-        if(!reviewData.findReviewUsingHotelIdAndReviewId(hotelId, reviewId).getUserNickname().equals(loggedUser)){
+        if(!db.getReviewUsingReviewId(reviewId).getUserNickname().equals(loggedUser)){
             response.sendRedirect("/home");
         }
 
@@ -111,16 +106,17 @@ public class EditReview extends HttpServlet {
 
         if (request.getParameter("delete") != null) {
             // delete the review reviewId from hotelId
-            boolean result = reviewData.deleteReview(hotelId, reviewId);
+            boolean result = db.deleteReview(reviewId);
             if(result){
                 response.sendRedirect("/hotelInfo?hotelId=" + hotelId);
             } else {
-                response.sendRedirect("/home");
+                out.println(Helper.failedResponseGenerator("Failed to delete review"));
+                return;
             }
         }
         if(request.getParameter("save") != null){
             // update the reviewText and reviewTitle of reviewId from hotelId
-            boolean result = reviewData.updateReview(hotelId, reviewId, reviewTitle, reviewText);
+            boolean result = db.updateReview(hotelId, reviewId, reviewTitle, reviewText);
             if(result){
                 response.sendRedirect("/hotelInfo?hotelId=" + hotelId);
             } else {
@@ -132,7 +128,6 @@ public class EditReview extends HttpServlet {
 
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
-        PrintWriter out = response.getWriter();
     }
 
 }

@@ -1,7 +1,9 @@
 package db;
 
 public class Queries {
-
+    public static final String INSERT_REVIEW = "INSERT INTO reviews (hotelId, reviewId, reviewTitle, reviewText, reviewRating, userNickname, reviewDate) VALUES (?, ?, ?, ?, ?, ?, ?);";
+    public static final String UPDATE_REVIEW = "UPDATE Reviews SET reviewText = ?, rating = ? WHERE reviewId = ?;";
+    public static final String DELETE_REVIEW = "DELETE FROM Reviews WHERE reviewId = ?;";
     public static final String GET_HOTEL_BY_ID = "SELECT * FROM hotels WHERE id = ?;";
     public static final String GET_REVIEWS_BY_HOTEL_ID  = "SELECT * FROM reviews WHERE hotelId = ?;";
 
@@ -35,6 +37,8 @@ public class Queries {
 
     public static final String REMOVE_FROM_FAVOURITES =
             "DELETE FROM favourites WHERE hotelId = ? AND userNickname = ?;";
+    public static final String REMOVE_ALL_FAVOURITES =
+            "DELETE FROM favourites WHERE userNickname = ?;";
     public static final String IS_FAVOURITE =
             "SELECT * FROM favourites WHERE hotelId = ? AND userNickname = ?;";
 

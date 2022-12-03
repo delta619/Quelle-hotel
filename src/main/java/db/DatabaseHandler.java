@@ -3,7 +3,6 @@ package db;
 import hotelapp.Hotel;
 import hotelapp.Review;
 
-import javax.swing.plaf.nimbus.State;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.sql.*;
@@ -76,7 +75,7 @@ public class DatabaseHandler {
         }
     }
 
-    public void addReview(String reviews) {
+    public void loadReviews(String reviews) {
         try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
             Statement statement = dbConnection.createStatement();
             System.out.println("INSERTING REVIEWS");
@@ -87,6 +86,56 @@ public class DatabaseHandler {
             System.out.println(ex);
         }
 
+    }
+
+    public void addReview(String hotelId, String reviewId, String reviewTitle, String reviewText, String reviewRating, String reviewUsername, String reviewDate) {
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            PreparedStatement statement = dbConnection.prepareStatement(Queries.INSERT_REVIEW);
+            statement.setString(1, hotelId);
+            statement.setString(2, reviewId);
+            statement.setString(3, reviewTitle);
+            statement.setString(4, reviewText);
+            statement.setString(5, reviewRating);
+            statement.setString(6, reviewUsername);
+            statement.setString(7, reviewDate);
+
+            System.out.println(statement.toString());
+
+            statement.executeUpdate();
+
+        }
+        catch (SQLException ex) {
+            System.out.println(ex);
+        }
+
+    }
+    public boolean deleteReview(String reviewId) {
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            PreparedStatement statement = dbConnection.prepareStatement(Queries.DELETE_REVIEW);
+            statement.setString(1, reviewId);
+            statement.executeUpdate();
+            return true;
+        }
+        catch (SQLException ex) {
+            System.out.println(ex);
+            return false;
+        }
+    }
+
+    public boolean updateReview(String reviewId, String reviewTitle, String reviewText, String rating) {
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            PreparedStatement statement = dbConnection.prepareStatement(Queries.UPDATE_REVIEW);
+            statement.setString(1, reviewTitle);
+            statement.setString(2, reviewText);
+            statement.setString(3, rating);
+            statement.setString(4, reviewId);
+            statement.executeUpdate();
+            return true;
+        }
+        catch (SQLException ex) {
+            System.out.println(ex);
+            return false;
+        }
     }
 
     public boolean isFavourite(String hotelId, String userNickname) {
@@ -127,7 +176,16 @@ public class DatabaseHandler {
             System.out.println(ex);
         }
     }
-
+    public void removeAllFavourites(String userNickname) {
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            PreparedStatement statement = dbConnection.prepareStatement(Queries.REMOVE_ALL_FAVOURITES);
+            statement.setString(1, userNickname);
+            statement.executeUpdate();
+        }
+        catch (SQLException ex) {
+            System.out.println(ex);
+        }
+    }
     public ArrayList<String> getFavHotels(String userNickname) {
         PreparedStatement statement = null;
 
