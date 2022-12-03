@@ -6,85 +6,35 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script>
-        function logout() {
-            $.ajax({
-                url: "/logout",
-                type: "GET",
-                success: function (data) {
-                    window.location.href = "/login";
-                }
-            });
-        }
 
-<!--        event listener on the table row except first row to extract the hotel id of that row-->
-
-        $(document).ready(function () {
-            $("#hotelTable").on("click", "tr", function () {
-                var hotelId = $(this).find("td").eq(0).html();
-                window.location.href = "/hotelInfo?hotelId=" + hotelId;
-            });
-        });
-
-
-        function findHotels(){
-            var hotelText = document.getElementById("hotelText").value;
-            $.ajax({
-                url: "/hotels?sub="+hotelText,
-                type: "GET",
-                success: function (data) {
-                    var table = document.getElementById("hotelTable");
-                    table.innerHTML = "";
-                    document.getElementById("hotelTable").removeAttribute("hidden");
-
-                    if(data.success == false){
-                        table.innerHTML = "No hotels found";
-                    }else{
-                        for(var i=0;i<data.hotels.length;i++){
-                            var row = table.insertRow(i);
-                            var cell1 = row.insertCell(0);
-                            var cell2 = row.insertCell(1);
-                            var cell3 = row.insertCell(2);
-
-                            cell1.innerHTML = data.hotels[i].hotelId;
-                            cell2.innerHTML = data.hotels[i].name;
-                            cell3.innerHTML = data.hotels[i].city;
-
-                        }
-                    }
-                },
-                error: function (data) {
-                    var table = document.getElementById("hotelTable");
-                    table.innerHTML = "Error occurred";
-                }
-            });
-        }
-
-    </script>
     <style>
-        #hotelTable {
-            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-            border-collapse: collapse;
-            width: 100%;
+        .table {
+            font-size: 14px;
         }
-        #hotelTable td, #hotelTable th {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        #hotelTable tr:nth-child(even){background-color: #f2f2f2;}
-        #hotelTable tr:hover {background-color: #ddd;}
-        #hotelTable tr {cursor: pointer;}
-        #hotelTable th {
-            padding-top: 12px;
-            padding-bottom: 12px;
-            text-align: left;
-            background-color: #aaa;
-            color: #eee;
 
+
+        .table th, .table td {
+            padding: 5px;
+            vertical-align: middle;
+            border-top: 1px solid #ddd;
         }
+
+        .table th {
+            font-weight: bold;
+            text-align: center;
+        }
+
+
+        .table td {
+            text-align: center;
+            cursor: pointer;
+        }
+
     </style>
+
 </head>
 <body>
+
 
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
@@ -117,10 +67,86 @@
     </div>
 
     <div class="row">
-        <table class="table table-striped" id="hotelTable">
-        </table>
-    </div>
+        <div class="col-lg-9">
+            <table class="table table-striped" id="hotelTable">
+                <thead>
+                <tr>
+                    <th>Hotel ID</th>
+                    <th>Hotel Name</th>
+                    <th>Hotel Address</th>
+                </tr>
 
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-3">
+            #if ($favHotels.size() > 0)
+            <ul id="favHotels">
+                <h3>Favourites</h3>
+                #foreach($hotel in $favHotels)
+                    <a href="/hotelInfo?hotelId=$hotel.id"><li id="$hotel.id">$hotel.name</li></a>
+                #end
+            </ul>
+            #else
+                <h3>No Favourites</h3>
+            #end
+
+
+
+        </div>
+    </div>
 </div>
+<script>
+        function logout() {
+            fetch('/logout', {method :'get'}).
+            then(data => {
+                window.location.href = "/login";
+             }).
+            catch(err => {
+              console.log(err);
+            });
+        }
+
+
+        document.getElementById("hotelTable").addEventListener("click", function(e) {
+            if (e.target && e.target.nodeName == "TD") {
+                var hotelId = e.target.parentNode.getAttribute("hotelId");
+                window.location.href = "/hotelInfo?hotelId=" + hotelId;
+                }
+        });
+
+
+        function findHotels(){
+
+        fetch('/hotels?sub=' + document.getElementById("hotelText").value, {method :'get'}).
+            then(data => {
+                return data.json();
+             }).
+            then(data => {
+                data = data.hotels;
+                var table = document.getElementById("hotelTable");
+                var tbody = table.getElementsByTagName("tbody")[0];
+                tbody.innerHTML = "";
+                for (var i = 0; i < data.length; i++) {
+                    var row = tbody.insertRow(i);
+                    row.setAttribute("hotelId", data[i].hotelId);
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    var cell3 = row.insertCell(2);
+                    cell1.innerHTML = data[i].hotelId;
+                    cell2.innerHTML = data[i].name;
+                    cell3.innerHTML = data[i].addr;
+                }
+             }).
+            catch(err => {
+              console.log(err);
+            });
+
+        }
+
+    </script>
+
 </body>
 </html>

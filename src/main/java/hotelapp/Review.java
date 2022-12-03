@@ -10,9 +10,6 @@ public class Review implements Comparable<Review> {
     private String reviewText;
     private String userNickname;
     private String reviewSubmissionDate;
-
-//    private DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-
     public Review(String hotelId, String reviewId, double ratingOverall, String title, String reviewText, String userNickname, String reviewSubmissionDate){
         this.hotelId = hotelId;
         this.reviewId = reviewId;

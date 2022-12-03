@@ -1,9 +1,13 @@
 package db;
 
+import hotelapp.Hotel;
+import hotelapp.Review;
+
 import javax.swing.plaf.nimbus.State;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -46,6 +50,10 @@ public class DatabaseHandler {
 
             statement = dbConnection.createStatement();
             statement.executeUpdate(Queries.CREATE_REVIEW_TABLE);
+
+            statement = dbConnection.createStatement();
+            statement.executeUpdate(Queries.CREATE_FAVOURITE_TABLE);
+
         }
         catch (SQLException ex) {
             System.out.println(ex);
@@ -81,6 +89,139 @@ public class DatabaseHandler {
 
     }
 
+    public boolean isFavourite(String hotelId, String userNickname) {
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            PreparedStatement statement = dbConnection.prepareStatement(Queries.IS_FAVOURITE);
+            statement.setString(1, hotelId);
+            statement.setString(2, userNickname);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return true;
+            }
+        }
+        catch (SQLException ex) {
+            System.out.println(ex);
+        }
+        return false;
+    }
+    public void addFavourite(String hotelId, String userNickname) {
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            PreparedStatement statement = dbConnection.prepareStatement(Queries.ADD_TO_FAVOURITES);
+
+            statement.setString(1, hotelId);
+            statement.setString(2, "ash"); // TODO: change to userNickname
+            statement.executeUpdate();
+        }
+        catch (SQLException ex) {
+            System.out.println(ex);
+        }
+    }
+    public void removeFavourite(String hotelId, String userNickname) {
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            PreparedStatement statement = dbConnection.prepareStatement(Queries.REMOVE_FROM_FAVOURITES);
+            statement.setString(1, hotelId);
+            statement.setString(2, userNickname);
+            statement.executeUpdate();
+        }
+        catch (SQLException ex) {
+            System.out.println(ex);
+        }
+    }
+
+    public ArrayList<String> getFavHotels(String userNickname) {
+        PreparedStatement statement = null;
+
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            statement = dbConnection.prepareStatement(Queries.GET_FAVOURITES);
+            statement.setString(1, userNickname);
+            ResultSet rs = statement.executeQuery();
+
+            ArrayList<String> favHotels = new ArrayList<>();
+
+            while (rs.next()) {
+                favHotels.add(rs.getString("hotelId"));
+            }
+
+            return favHotels;
+        } catch (SQLException ex) {
+            System.out.println(ex);
+        }
+        return null;
+    }
+    public Hotel getHotel(String hotelId) {
+        PreparedStatement statement = null;
+
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            statement = dbConnection.prepareStatement(Queries.GET_HOTEL_BY_ID);
+            statement.setString(1, hotelId);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                String hotelName = rs.getString("name");
+                String address = rs.getString("address");
+                String city = rs.getString("city");
+                String state = rs.getString("state");
+                Double latitude = rs.getDouble("lat");
+                Double longitude = rs.getDouble("lng");
+
+                return new Hotel(hotelName, hotelId, address, latitude, longitude, city, state);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    public ArrayList<Review> getReviewsUsingHotelId(String hotelId) {
+        PreparedStatement statement = null;
+
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            statement = dbConnection.prepareStatement(Queries.GET_REVIEWS_BY_HOTEL_ID);
+
+            statement.setString(1, hotelId);
+            ResultSet rs = statement.executeQuery();
+            ArrayList<Review> reviews = new ArrayList<>();
+
+            while (rs.next()) {
+                String reviewId = rs.getString("reviewId");
+                String userNickname = rs.getString("userNickname");
+                String reviewTitle = rs.getString("reviewTitle");
+                String reviewText = rs.getString("reviewText");
+                String reviewDate = rs.getString("reviewDate");
+                int reviewOverall = rs.getInt("reviewRating");
+
+                reviews.add(new Review(hotelId, reviewId, reviewOverall, reviewTitle, reviewText, userNickname, reviewDate));
+            }
+            return reviews;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public Review getReviewUsingReviewId(String reviewId) {
+        PreparedStatement statement = null;
+
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            statement = dbConnection.prepareStatement(Queries.GET_REVIEWS_BY_REVIEW_ID);
+
+            statement.setString(1, reviewId);
+            ResultSet rs = statement.executeQuery();
+            Review review = null;
+            if (rs.next()) {
+                String hotelId = rs.getString("hotelId");
+                String userNickname = rs.getString("userNickname");
+                String reviewTitle = rs.getString("reviewTitle");
+                String reviewText = rs.getString("reviewText");
+                String reviewDate = rs.getString("reviewDate");
+                int reviewOverall = rs.getInt("reviewOverall");
+
+                return new Review(hotelId, reviewId, reviewOverall, reviewTitle, reviewText, userNickname, reviewDate);
+            }
+        } catch (SQLException e) {
+            return null;
+        }
+        return null;
+    }
 
     public void removeAllTables(){
         Statement statement;
@@ -92,6 +233,10 @@ public class DatabaseHandler {
 
             statement = dbConnection.createStatement();
             statement.executeUpdate(Queries.DROP_REVIEW_TABLE);
+
+            statement = dbConnection.createStatement();
+            statement.executeUpdate(Queries.DROP_FAVOURITE_TABLE);
+
         }
         catch (SQLException ex) {
             System.out.println(ex);

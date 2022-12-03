@@ -2,6 +2,10 @@ package db;
 
 public class Queries {
 
+    public static final String GET_HOTEL_BY_ID = "SELECT * FROM hotels WHERE id = ?;";
+    public static final String GET_REVIEWS_BY_HOTEL_ID  = "SELECT * FROM reviews WHERE hotelId = ?;";
+
+    public static final String GET_REVIEWS_BY_REVIEW_ID = "SELECT * FROM reviews WHERE reviewId = ?;";
     public static final String CREATE_USER_TABLE =
             "CREATE TABLE users (" +
                     "userid INTEGER AUTO_INCREMENT PRIMARY KEY, " +
@@ -13,16 +17,27 @@ public class Queries {
             "CREATE TABLE hotels (" +
                     "id VARCHAR(128) PRIMARY KEY, " +
                     "name TEXT NOT NULL , " +
-                    "address TEXT NOT NULL, " +
-                    "city TEXT NOT NULL, " +
-                    "state TEXT NOT NULL, " +
-                    "lat TEXT NOT NULL, " +
-                    "lng TEXT NOT NULL);";
+                    "address TEXT , " +
+                    "city TEXT , " +
+                    "state TEXT , " +
+                    "lat TEXT , " +
+                    "lng TEXT );";
 
-    public static final String DROP_HOTEL_TABLE =
-            "DROP TABLE hotels;";
-    public static final String DROP_REVIEW_TABLE =
-            "DROP TABLE reviews;";
+    public static final String CREATE_FAVOURITE_TABLE =
+            "CREATE TABLE favourites (" +
+                    "hotelId VARCHAR(128) NOT NULL, " +
+                    "PRIMARY KEY (hotelId, userNickname), " +
+                    "userNickname VARCHAR(128) ); ";
+
+    public static final String ADD_TO_FAVOURITES =
+            "INSERT INTO favourites (hotelId, userNickname)" +
+                    " VALUES (?, ?);";
+
+    public static final String REMOVE_FROM_FAVOURITES =
+            "DELETE FROM favourites WHERE hotelId = ? AND userNickname = ?;";
+    public static final String IS_FAVOURITE =
+            "SELECT * FROM favourites WHERE hotelId = ? AND userNickname = ?;";
+
     public static final String INSERT_HOTEL_DATA =
             "INSERT INTO hotels (id, name, address, city, state, lat, lng) " +
                     "VALUES ";
@@ -40,6 +55,17 @@ public class Queries {
                     "reviewRating TEXT NOT NULL , " +
                     "userNickname TEXT NOT NULL , " +
                     "reviewDate TEXT NOT NULL );";
+
+    public static final String DROP_HOTEL_TABLE =
+            "DROP TABLE hotels;";
+    public static final String DROP_REVIEW_TABLE =
+            "DROP TABLE reviews;";
+    public static final String DROP_FAVOURITE_TABLE =
+            "DROP TABLE favourites;";
+    public static final String GET_FAVOURITES =
+            "SELECT * FROM favourites WHERE userNickname = ?;";
+
+
 
     /** Used to insert a new user into the database. */
     public static final String REGISTER_SQL =

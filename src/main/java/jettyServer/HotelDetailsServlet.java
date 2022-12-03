@@ -2,6 +2,7 @@ package jettyServer;
 import java.util.UUID;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import db.DatabaseHandler;
 import hotelapp.Hotel;
 import hotelapp.Review;
 import hotelapp.ThreadSafeHotelHandler;
@@ -35,9 +36,10 @@ public class HotelDetailsServlet extends HttpServlet {
 //            response.sendRedirect("/register");
 //        }
 
+        response.setHeader("Access-Control-Allow-Origin", "*");
 
-        ThreadSafeHotelHandler hotelData = (ThreadSafeHotelHandler) getServletContext().getAttribute("hotelController");
-        ThreadSafeReviewHandler reviewData = (ThreadSafeReviewHandler) getServletContext().getAttribute("reviewController");
+
+        DatabaseHandler db = (DatabaseHandler) getServletContext().getAttribute("dbController");
 
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
@@ -55,21 +57,22 @@ public class HotelDetailsServlet extends HttpServlet {
             return;
         }
 
-        Hotel hotelDetails = hotelData.findHotelId(hotelId);
+
+        Hotel hotelDetails = db.getHotel(hotelId);
+
         if(hotelDetails == null){
             out.println(Helper.hotelResponseGenerator(false, null));
             return;
         }
 
-        TreeSet<Review> reviews =  reviewData.findReviewsByHotelId(hotelId, true);
-
+        ArrayList<Review> allReviews = db.getReviewsUsingHotelId(hotelId);
         double sumRating = 0.0;
         double avgRating = 0.0;
 
-        for(Review review : reviews){
+        for(Review review : allReviews){
             sumRating += review.getRatingOverall();
         }
-        avgRating = sumRating / Math.max(1, reviews.size());
+        avgRating = sumRating / Math.max(1, allReviews.size());
         avgRating = Math.round(avgRating * 100.0) / 100.0;
 
 
@@ -78,7 +81,7 @@ public class HotelDetailsServlet extends HttpServlet {
         context.put("address", hotelDetails.getAddress());
         context.put("name", hotelDetails.getName());
         context.put("hotelId", hotelDetails.getId());
-        context.put("loggedUser", loggedUser);
+        context.put("loggedUser", "ash"); //TODO: change to loggedUser
 
         context.put("avgRating", avgRating);
         context.put("link", "https://www.expedia.com/" + hotelDetails.getCity() + "-Hotels-" + hotelDetails.getName()+ ".h" + hotelId + ".Hotel-Information");
@@ -92,13 +95,13 @@ public class HotelDetailsServlet extends HttpServlet {
         // segregate reviews into pages
         int page = Integer.parseInt(pageNo);
         int pageSize = 5;
-        int totalReviews = reviews.size();
+        int totalReviews = allReviews.size();
         int totalPages = (int) Math.ceil((double) totalReviews / pageSize);
         int start = (page - 1) * pageSize;
         int end = Math.min(start + pageSize, totalReviews);
 
 
-        ArrayList<Review> reviewsList = new ArrayList<>(reviews);
+        ArrayList<Review> reviewsList = new ArrayList<>(allReviews);
         ArrayList<Review> reviewsPage = new ArrayList<>(reviewsList.subList(start, end));
 
 
@@ -107,8 +110,10 @@ public class HotelDetailsServlet extends HttpServlet {
 
         context.put("reviews", reviewsPage);
         context.put("totalPages", totalPages);
-        Template template = ve.getTemplate(Helper.CONSTANTS.HOTEL_DETAILS);
+        context.put("latitude", db.getHotel(hotelId).getLatitude());
+        context.put("longitude", db.getHotel(hotelId).getLongitude());
 
+        Template template = ve.getTemplate(Helper.CONSTANTS.HOTEL_DETAILS);
         StringWriter writer = new StringWriter();
         template.merge(context, writer);
         out.println(writer.toString());

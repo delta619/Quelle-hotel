@@ -18,7 +18,7 @@ public class LoadData extends HttpServlet {
         // load all the data from reviews and hotels to the database
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
-
+        clear();
         DatabaseHandler db = DatabaseHandler.getInstance();
 
         ThreadSafeHotelHandler hotelData = (ThreadSafeHotelHandler) getServletContext().getAttribute("hotelController");
@@ -37,10 +37,7 @@ public class LoadData extends HttpServlet {
             String query = joiner.toString() ;
             sj.add(query);
         }
-
         db.addHotel(sj.toString());
-
-
         sj = new StringJoiner(",");
         for(Review review: reviewData.getAllReviews()){
             StringJoiner joiner = new StringJoiner("\",\"", "(\"", "\")");
@@ -63,18 +60,12 @@ public class LoadData extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // delete all the data from the database
-        response.setContentType("application/json");
 
+    }
 
+    public void clear(){
         DatabaseHandler db = DatabaseHandler.getInstance();
-
         db.removeAllTables();
         db.CreateTables();
-
-        response.setStatus(HttpServletResponse.SC_OK);
-
-
-
     }
 }

@@ -2,6 +2,7 @@ package jettyServer;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
 public class Helper {
 
     /**
@@ -68,7 +69,7 @@ public class Helper {
     /**
      * This method generates the response for the weather servlet
      * @param success boolean that indicates if the request was successful
-     * @param jsonObject JsonObject that contains the hotel weather info
+     * JsonObject that contains the hotel info
      * @return JsonObject that contains the response
      */
     public static Object weatherResponseGenerator (boolean success, JsonObject hotelObj, String temperature, String windspeed){
@@ -84,6 +85,20 @@ public class Helper {
         jsonObject.addProperty("temperature", temperature);
         jsonObject.addProperty("windspeed", windspeed);
 
+        return jsonObject;
+    }
+
+    public static Object userSuccessResponseGenerator(JsonObject userObj){
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("success", true);
+        jsonObject.add("data", userObj);
+
+        return jsonObject;
+    }
+    public static Object failedResponseGenerator(String message){
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("success", false);
+        jsonObject.addProperty("message", message);
         return jsonObject;
     }
 

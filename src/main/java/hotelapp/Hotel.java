@@ -28,6 +28,11 @@ public class Hotel implements Comparable<Hotel> {
         this.city = city;
         this.state = state;
 
+        this.ll = new LL();
+        this.ll.lat = String.valueOf(lat);
+        this.ll.lng = String.valueOf(lng);
+
+
     }
 
     public String getId(){

@@ -1,5 +1,6 @@
 package jettyServer;
 
+import db.DatabaseHandler;
 import hotelapp.Hotel;
 import hotelapp.Review;
 import hotelapp.ThreadSafeHotelHandler;

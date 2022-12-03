@@ -1,5 +1,6 @@
 package jettyServer;
 
+import db.DatabaseHandler;
 import hotelapp.ThreadSafeHotelHandler;
 import hotelapp.ThreadSafeReviewHandler;
 import org.apache.velocity.app.VelocityEngine;
@@ -38,6 +39,7 @@ public class JettyServer {
         handler.setAttribute("templateEngine", velocity);
         handler.setAttribute("reviewController", tsReviewHandler );
         handler.setAttribute("hotelController", tsHotelHandler );
+        handler.setAttribute("dbController", DatabaseHandler.getInstance());
 
         // Note: you should also create servlet classes in this package
 
@@ -49,6 +51,8 @@ public class JettyServer {
         handler.addServlet(HotelDetailsServlet.class, "/hotelInfo");
         handler.addServlet(EditReview.class, "/editReview");
         handler.addServlet(LoadData.class, "/loadData");
+        handler.addServlet(UserActionsServlet.class, "/userActions");
+
 
 
 

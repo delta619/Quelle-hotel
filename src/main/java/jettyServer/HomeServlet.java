@@ -1,5 +1,8 @@
 package jettyServer;
 
+import db.DatabaseHandler;
+import hotelapp.Hotel;
+import hotelapp.ThreadSafeHotelHandler;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -11,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 
 public class HomeServlet extends HttpServlet {
 
@@ -30,7 +34,14 @@ public class HomeServlet extends HttpServlet {
 
         VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
         VelocityContext context = new VelocityContext();
-        context.put("loggedUser", loggedUser);
+        context.put("loggedUser", "ash"); //TODO: change this to loggedUser
+        ThreadSafeHotelHandler hotelData = (ThreadSafeHotelHandler) request.getServletContext().getAttribute("hotelController");
+        ArrayList<Hotel> favHotels  = new ArrayList<>();
+        ArrayList<String> favList = DatabaseHandler.getInstance().getFavHotels("ash"); //TODO: change this to loggedUser
+        for(String fav : favList){
+            favHotels.add(hotelData.findHotelId(fav));
+        }
+        context.put("favHotels", favHotels);
         Template template = ve.getTemplate(Helper.CONSTANTS.HOME);
 
         StringWriter writer = new StringWriter();
