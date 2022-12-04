@@ -40,7 +40,7 @@ public class JettyServer {
         handler.setAttribute("dbController", DatabaseHandler.getInstance());
 
 
-//        Helper.setUpDB( tsHotelHandler,  tsReviewHandler);
+        Helper.setUpDB( tsHotelHandler,  tsReviewHandler);
 
 
         handler.addServlet(HomeServlet.class, "/home");
@@ -51,10 +51,6 @@ public class JettyServer {
         handler.addServlet(HotelDetailsServlet.class, "/hotelInfo");
         handler.addServlet(ReviewServlet.class, "/review");
         handler.addServlet(UserActionsServlet.class, "/userActions");
-
-
-
-
 
         server.setHandler(handler);
         server.start();

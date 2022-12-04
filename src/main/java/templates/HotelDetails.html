@@ -50,9 +50,11 @@
                 }).then(function(data) {
                     if(data.success){
                         if(addedToFavourite){
+                            alert("Removed form favourites.");
                             document.getElementById("blankFavorite").removeAttribute("hidden");
                             document.getElementById("filledFavorite").setAttribute("hidden", "true");
                         }else{
+                            alert("Added to favourites.");
                             document.getElementById("blankFavorite").setAttribute("hidden", "true");
                             document.getElementById("filledFavorite").removeAttribute("hidden");
                         }
@@ -173,15 +175,15 @@
                 <form action="/review?hotelId=$hotelId" method="post">
                     <div class="form-group">
                         <label for="reviewTitle">Review Title:</label>
-                        <input type="text" class="form-control" id="reviewTitle" name="reviewTitle">
+                        <input type="text" required class="form-control" id="reviewTitle" name="reviewTitle">
                     </div>
                     <div class="form-group">
                         <label for="reviewText">Review Text:</label>
-                        <input type="text" class="form-control" id="reviewText" name="reviewText">
+                        <input type="text" required class="form-control" id="reviewText" name="reviewText">
                     </div>
                     <div class="form-group">
                         <label for="reviewText">Review Rating:</label>
-                        <input type="number" min="0" max="5" value="3" class="form-control" id="reviewRating" name="reviewRating">
+                        <input type="number" required min="0" max="5" value="3" class="form-control" id="reviewRating" name="reviewRating">
                     </div>
 
                     <div class="modal-footer">
@@ -226,27 +228,24 @@
 
 <div class="container">
     <hr>
-    <button class="btn btn-primary" value="Add a review" data-toggle="modal" data-target="#addReviewModal">Add a review</button>
+    <row class="d-flex justify-content-center">
+        <button class="btn btn-primary" value="Add a review" data-toggle="modal" data-target="#addReviewModal">Add a review</button>
+    </row>
     <hr>
 
-    #if ($totalPages > 1)
-    <div id="reviews" class="card m-4">
-    </div>
-    <div class="row d-flex justify-content-center">
+    #if ($totalPages > 0)
+        <div class="row d-flex justify-content-center">
             <nav aria-label="Page navigation example">
                 <ul class="pagination">
+                    <li class="page-item"><a class="page-link" href="javascript:previewsPage()">Previous</a></li>
                     #foreach( $i in [1..$totalPages] )
-                    <li class="page-item"><a class="page-link" href="javascript:fetchReviews($i)">$i</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:fetchReviews($i)">$i</a></li>
                     #end
-
+                    <li class="page-item"><a class="page-link" href="javascript:nextPage()">Next</a></li>
                 </ul>
             </nav>
-
-    </div>
-
-
-
-
+        </div>
+        <div id="reviews" class="card m-4"></div>
     #else
         <h2>No Reviews</h2>
     #end
@@ -254,6 +253,25 @@
 </div>
 
 <script>
+
+let pageCounter = 1;
+let totalPages = $totalPages;
+
+        function nextPage() {
+            if (pageCounter < totalPages) {
+                pageCounter++;
+                fetchReviews(pageCounter);
+            }
+
+        }
+        function previewsPage() {
+            if (pageCounter > 1) {
+                pageCounter--;
+                fetchReviews(pageCounter);
+            }
+        }
+
+
     function isHotelFavourite(){
 
         fetch("/userActions?hotelId=$hotelId&action=isHotelFavourite")
@@ -273,6 +291,7 @@
 
 
     function fetchReviews(page) {
+          pageCounter = page
           fetch(`/hotelInfo?hotelId=$hotelId&page=${page}&action=fetchReviews`,{method:"POST"})
               .then(response => response.json())
               .then(data => {
@@ -353,9 +372,6 @@
 
                             reviews.appendChild(card);
                         });
-
-
-    // endof if
                   }
               })
     }
