@@ -17,8 +17,7 @@ import java.net.URL;
 public class UserActionsServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        String loggedUser = Helper.getLoggedUser(request.getSession());
+        String loggedUser = Helper.validateSession(request, response);
 
         DatabaseHandler db = (DatabaseHandler) getServletContext().getAttribute("dbController");
 
@@ -79,6 +78,7 @@ public class UserActionsServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String loggedUser = Helper.validateSession(request, response);
 
     }
     public String[] getWeatherInfo(String latitude, String longitude) {

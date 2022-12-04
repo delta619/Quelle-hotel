@@ -23,6 +23,7 @@ import java.util.UUID;
 public class ReviewServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String loggedUser = Helper.validateSession(request, response);
 
         String reviewId = request.getParameter("reviewId");
         if(reviewId == null){
@@ -30,7 +31,6 @@ public class ReviewServlet extends HttpServlet {
         }
         reviewId = StringEscapeUtils.escapeHtml4(reviewId);
 
-        String loggedUser = Helper.getLoggedUser(request.getSession());
         DatabaseHandler db = (DatabaseHandler) getServletContext().getAttribute("dbController");
 
         response.setContentType("text/html");
@@ -39,14 +39,6 @@ public class ReviewServlet extends HttpServlet {
 
 
         Review review = db.getReviewUsingReviewId(reviewId);
-
-//        if(review == null){
-//            response.sendRedirect("/home");
-//        }
-
-//        if(!review.getUserNickname().equals(loggedUser)){
-//            response.sendRedirect("/home");
-//        }
 
         VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
         VelocityContext context = new VelocityContext();
@@ -69,12 +61,13 @@ public class ReviewServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String loggedUser = Helper.validateSession(request, response);
+
         String action = request.getParameter("action");
         String hotelId = request.getParameter("hotelId");
 
         DatabaseHandler db = (DatabaseHandler) getServletContext().getAttribute("dbController");
 
-        String loggedUser = Helper.getLoggedUser(request.getSession());
         PrintWriter out = response.getWriter();
 
         if (action != null || hotelId != null) {

@@ -2,6 +2,7 @@ package jettyServer;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import db.DatabaseHandler;
 import hotelapp.Hotel;
 import hotelapp.ThreadSafeHotelHandler;
 import hotelapp.ThreadSafeReviewHandler;
@@ -18,66 +19,50 @@ import java.util.ArrayList;
 public class HotelServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ThreadSafeHotelHandler hotelData = (ThreadSafeHotelHandler) getServletContext().getAttribute("hotelController");
+        String loggedUser = Helper.validateSession(request, response);
 
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
         PrintWriter out = response.getWriter();
-        Boolean isSubString = false;
-        Boolean isHotelId = false;
+        DatabaseHandler db = (DatabaseHandler) getServletContext().getAttribute("dbController");
 
-        String sub = request.getParameter("sub");
-        sub = StringEscapeUtils.escapeHtml4(sub);
+        try {
 
-        String hotelId = request.getParameter("hotelId");
-        hotelId = StringEscapeUtils.escapeHtml4(hotelId);
+            String sub = request.getParameter("sub");
+            if (sub == null) {
+                sub = "";
+            }
+            sub = StringEscapeUtils.escapeHtml4(sub);
 
-
-        if(sub != null){
-            isSubString = true;
-        }
-        if(hotelId != null){
-            isHotelId = true;
-        }
-
-        if(!isSubString && !isHotelId){
-            // show all hotels from the database
-            JsonObject res = new JsonObject();
-            JsonArray jsonArray = hotelData.findHotelsUsingSubstring("");
-            res.add("hotels", jsonArray);
-            out.println(Helper.hotelResponseGenerator(true, res));
-            return;
-        }
-
-
-
-        JsonArray hotels;
-
-        if(isSubString){
-            hotels = hotelData.findHotelsUsingSubstring(sub);
-            if(hotels.size() == 0){
-                out.println(Helper.hotelResponseGenerator(false, null));
+            ArrayList<Hotel> hotels = db.getHotelsUsingSubstring(sub.trim());
+            if (hotels.size() == 0) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                out.print(Helper.hotelResponseGenerator(false, null));
                 return;
             }
 
             JsonObject res = new JsonObject();
-            res.addProperty("success", true);
-            res.add("hotels", hotels);
-            out.println(Helper.hotelResponseGenerator(true, res));
-            return;
-
-        }else {
-            JsonObject hotel = hotelData.getHotelInfoJson(hotelId);
-            if(hotel == null){
-                out.println(Helper.hotelResponseGenerator(false, null));
-                return;
+            JsonArray hotelsArray = new JsonArray();
+            for (Hotel hotel : hotels) {
+                hotelsArray.add(hotel.toJson());
             }
 
-            JsonObject res = new JsonObject();
-            res.add("hotel", hotel);
-            out.println(Helper.hotelResponseGenerator(true, res));
-            return;
+            res.add("hotels", hotelsArray);
+            out.print(Helper.hotelResponseGenerator(true, res));
+
+
+            // send hotels in json format
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            out.println(Helper.failedResponseGenerator("Something went wrong."));
         }
+
+
+
+
+
+
 
 
     }

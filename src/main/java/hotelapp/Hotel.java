@@ -51,18 +51,26 @@ public class Hotel implements Comparable<Hotel> {
     public String getAddress(){
         return this.address;
     }
-
     public String getCity() {
         return city;
     }
-
     public String getState() {
         return state;
     }
-
     @Override
     public int compareTo(Hotel hotel) {
         return getId().compareTo(hotel.getId());
+    }
+    public JsonObject toJson() {
+        JsonObject json = new JsonObject();
+        json.addProperty("hotelId", id);
+        json.addProperty("name", name);
+        json.addProperty("addr", address);
+        json.addProperty("city", city);
+        json.addProperty("state", state);
+        json.addProperty("lat", ll.lat);
+        json.addProperty("lng", ll.lng);
+        return json;
     }
 
     @Override

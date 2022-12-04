@@ -37,8 +37,6 @@ public class JettyServer {
         VelocityEngine velocity = new VelocityEngine();
         velocity.init();
         handler.setAttribute("templateEngine", velocity);
-        handler.setAttribute("reviewController", tsReviewHandler );
-        handler.setAttribute("hotelController", tsHotelHandler );
         handler.setAttribute("dbController", DatabaseHandler.getInstance());
 
 
@@ -52,7 +50,6 @@ public class JettyServer {
         handler.addServlet(HotelServlet.class, "/hotels");
         handler.addServlet(HotelDetailsServlet.class, "/hotelInfo");
         handler.addServlet(ReviewServlet.class, "/review");
-        handler.addServlet(LoadData.class, "/loadData");
         handler.addServlet(UserActionsServlet.class, "/userActions");
 
 

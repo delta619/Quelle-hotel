@@ -75,9 +75,17 @@ background-color:#545454;
         function register(){
             let username = document.getElementById("username").value;
             let password = document.getElementById("password").value;
-            let regex = /^(?=.*[@$!#%()*?&])[A-Za-z\d@$!%#()*?&]{8,}$/;
-            if(!regex.test(password)){
+            let regexPass = /^(?=.*[@$!#%()*?&])[A-Za-z\d@$!%#()*?&]{8,}$/;
+            let regexUser = /^[A-Za-z\d@$!%#()*?&]{1,}$/;
+
+
+
+            if(!regexPass.test(password)){
                 document.getElementById("error").innerText = "Your password must contain at least one special character and be at least 8 characters long";
+                return;
+            }
+            if(!regexUser.test(username)){
+                document.getElementById("error").innerText = "Please enter a valid username";
                 return;
             }
             fetch("/register", {

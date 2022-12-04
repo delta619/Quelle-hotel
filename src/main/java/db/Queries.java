@@ -16,6 +16,7 @@ public class Queries {
 
 
     public static final String GET_HOTEL_BY_ID = "SELECT * FROM hotels WHERE id = ?;";
+    public static final String GET_HOTEL_BY_SUBSTRING = "SELECT * FROM hotels WHERE name LIKE ?;";
     public static final String GET_REVIEWS_BY_HOTEL_ID = "SELECT * FROM reviews WHERE hotelId = ? ORDER BY reviewDate desc  LIMIT ? OFFSET ?;";
 
 

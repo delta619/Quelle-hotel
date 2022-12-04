@@ -8,7 +8,10 @@ import hotelapp.Review;
 import hotelapp.ThreadSafeHotelHandler;
 import hotelapp.ThreadSafeReviewHandler;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.StringJoiner;
 
 public class Helper {
@@ -110,6 +113,12 @@ public class Helper {
         return jsonObject;
     }
 
+    public static String validateSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if(request.getSession().getAttribute("loggedUser") == null){
+            response.sendRedirect("/login");
+        }
+        return (String) request.getSession().getAttribute("loggedUser");
+    }
     public static String getLoggedUser(HttpSession session){
         if(session.getAttribute("loggedUser") == null){
             return "anonymous";

@@ -236,6 +236,33 @@ public class DatabaseHandler {
         }
         return null;
     }
+    public ArrayList<Hotel> getHotelsUsingSubstring(String substring){
+        PreparedStatement statement = null;
+
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            statement = dbConnection.prepareStatement(Queries.GET_HOTEL_BY_SUBSTRING);
+            statement.setString(1, "%"+substring+"%");
+            ResultSet rs = statement.executeQuery();
+
+            ArrayList<Hotel> hotels = new ArrayList<>();
+
+            while (rs.next()) {
+                String hotelName = rs.getString("name");
+                String hotelId = rs.getString("id");
+                String address = rs.getString("address");
+                String city = rs.getString("city");
+                String state = rs.getString("state");
+                Double latitude = rs.getDouble("lat");
+                Double longitude = rs.getDouble("lng");
+
+                hotels.add(new Hotel(hotelName, hotelId, address, latitude, longitude, city, state));
+            }
+
+            return hotels;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public int getReviewsCountUsingHotelId(String hotelId) {
         PreparedStatement statement = null;
 

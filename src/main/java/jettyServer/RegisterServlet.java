@@ -18,6 +18,11 @@ public class RegisterServlet extends HttpServlet {
 
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String loggedUser = (String) request.getSession().getAttribute("loggedUser");
+        if (loggedUser != null) {
+            response.sendRedirect("/home");
+            return;
+        }
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
         PrintWriter out = response.getWriter();

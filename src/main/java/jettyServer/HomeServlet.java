@@ -19,17 +19,13 @@ import java.util.ArrayList;
 public class HomeServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String loggedUser = Helper.validateSession(request, response);
 
 
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
         PrintWriter out = response.getWriter();
 
-        String loggedUser = Helper.getLoggedUser(request.getSession());
-
-//        if(loggedUser == null){
-//            response.sendRedirect("/register");
-//        }
         DatabaseHandler db = (DatabaseHandler) getServletContext().getAttribute("dbController");
 
         VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
@@ -41,12 +37,12 @@ public class HomeServlet extends HttpServlet {
         ThreadSafeHotelHandler hotelData = (ThreadSafeHotelHandler) request.getServletContext().getAttribute("hotelController");
         ArrayList<Hotel> favHotels  = new ArrayList<>();
         ArrayList<String> favList = db.getFavHotels(loggedUser);
-        for(String fav : favList){
-            favHotels.add(hotelData.findHotelId(fav));
+        for(String favID : favList){
+            favHotels.add(db.getHotel(favID));
         }
         context.put("favHotels", favHotels);
-        Template template = ve.getTemplate(Helper.CONSTANTS.HOME);
 
+        Template template = ve.getTemplate(Helper.CONSTANTS.HOME);
         StringWriter writer = new StringWriter();
         template.merge(context, writer);
         out.println(writer.toString());
