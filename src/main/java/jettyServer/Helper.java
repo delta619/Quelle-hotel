@@ -3,6 +3,8 @@ package jettyServer;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import javax.servlet.http.HttpSession;
+
 public class Helper {
 
     /**
@@ -100,6 +102,13 @@ public class Helper {
         jsonObject.addProperty("success", false);
         jsonObject.addProperty("message", message);
         return jsonObject;
+    }
+
+    public static String getLoggedUser(HttpSession session){
+        if(session.getAttribute("loggedUser") == null){
+            return "anonymous";
+        }
+        return session.getAttribute("loggedUser").toString();
     }
 
     //CONSTANTS

@@ -65,7 +65,6 @@ public class LoginServlet extends HttpServlet {
         HttpSession session = request.getSession();
         session.setAttribute("loggedUser", username);
 
-        // loggedUser is  not null then redirect to home page or show a failed registration page
         response.sendRedirect("/home");
 
 

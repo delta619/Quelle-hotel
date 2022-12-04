@@ -17,10 +17,8 @@ import java.net.URL;
 public class UserActionsServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession();
-        String loggedUser = (String) session.getAttribute("loggedUser");
 
-        loggedUser = "ash";
+        String loggedUser = Helper.getLoggedUser(request.getSession());
 
         DatabaseHandler db = (DatabaseHandler) getServletContext().getAttribute("dbController");
 
@@ -32,33 +30,26 @@ public class UserActionsServlet extends HttpServlet {
         try {
 
             String action = request.getParameter("action");
-
             if (action == null) {
                 out.println(Helper.failedResponseGenerator("Action not specified"));
                 return;
             }else{
                 action = StringEscapeUtils.escapeHtml4(action);
             }
-
             if ("addToFavourite".equals(action)) {
-
                 String hotelId = request.getParameter("hotelId");
                 hotelId = StringEscapeUtils.escapeHtml4(hotelId);
-
                 db.addFavourite(hotelId, loggedUser);
                 out.println(Helper.userSuccessResponseGenerator(null));
             } else if ("removeFromFavourite".equals(action)) {
                 String hotelId = request.getParameter("hotelId");
                 hotelId = StringEscapeUtils.escapeHtml4(hotelId);
-
                 db.removeFavourite(hotelId, loggedUser);
                 out.println(Helper.userSuccessResponseGenerator(null));
-
             } else if ("isHotelFavourite".equals(action)) {
                 String hotelId = request.getParameter("hotelId");
                 hotelId = StringEscapeUtils.escapeHtml4(hotelId);
                 boolean isFavourite = db.isFavourite(hotelId, loggedUser);
-
                 if(isFavourite){
                     out.println(Helper.userSuccessResponseGenerator(null));
                 }else {

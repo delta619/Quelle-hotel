@@ -105,7 +105,9 @@ public class DatabaseHandler {
 
         }
         catch (SQLException ex) {
+
             System.out.println(ex);
+            throw new RuntimeException(ex);
         }
 
     }
@@ -158,7 +160,7 @@ public class DatabaseHandler {
             PreparedStatement statement = dbConnection.prepareStatement(Queries.ADD_TO_FAVOURITES);
 
             statement.setString(1, hotelId);
-            statement.setString(2, "ash"); // TODO: change to userNickname
+            statement.setString(2, userNickname);
             statement.executeUpdate();
         }
         catch (SQLException ex) {
@@ -230,14 +232,32 @@ public class DatabaseHandler {
         }
         return null;
     }
+    public int getReviewsCountUsingHotelId(String hotelId) {
+        PreparedStatement statement = null;
 
-    public ArrayList<Review> getReviewsUsingHotelId(String hotelId) {
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            statement = dbConnection.prepareStatement(Queries.GET_REVIEWS_COUNT_USING_HOTEL_ID);
+            statement.setString(1, hotelId);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("totalReviewsCount");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
+    public ArrayList<Review> getReviewsUsingHotelId(String hotelId, int offset, int limit) {
         PreparedStatement statement = null;
 
         try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
             statement = dbConnection.prepareStatement(Queries.GET_REVIEWS_BY_HOTEL_ID);
 
             statement.setString(1, hotelId);
+            statement.setInt(2, limit);
+            statement.setInt(3, offset);
             ResultSet rs = statement.executeQuery();
             ArrayList<Review> reviews = new ArrayList<>();
 
@@ -256,27 +276,48 @@ public class DatabaseHandler {
             throw new RuntimeException(e);
         }
     }
+    public double getAvgRating(String hotelId) {
+        PreparedStatement statement = null;
+
+        try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
+            statement = dbConnection.prepareStatement(Queries.GET_AVG_RATING);
+            statement.setString(1, hotelId);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getDouble("avgRating");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
     public Review getReviewUsingReviewId(String reviewId) {
         PreparedStatement statement = null;
 
         try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
-            statement = dbConnection.prepareStatement(Queries.GET_REVIEWS_BY_REVIEW_ID);
+            statement = dbConnection.prepareStatement(Queries.GET_REVIEW_USING_REVIEW_ID);
 
             statement.setString(1, reviewId);
             ResultSet rs = statement.executeQuery();
             Review review = null;
-            if (rs.next()) {
+            while (rs.next()) {
                 String hotelId = rs.getString("hotelId");
                 String userNickname = rs.getString("userNickname");
                 String reviewTitle = rs.getString("reviewTitle");
                 String reviewText = rs.getString("reviewText");
                 String reviewDate = rs.getString("reviewDate");
-                int reviewOverall = rs.getInt("reviewOverall");
+                int reviewRating = rs.getInt("reviewRating");
 
-                return new Review(hotelId, reviewId, reviewOverall, reviewTitle, reviewText, userNickname, reviewDate);
+                review =  new Review(hotelId, reviewId, reviewRating, reviewTitle, reviewText, userNickname, reviewDate);
+                System.out.println(review);
+                return review;
             }
         } catch (SQLException e) {
-            return null;
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+
         }
         return null;
     }
@@ -345,11 +386,9 @@ public class DatabaseHandler {
      * @param newpass - password of new user
      */
     public void registerUser(String newuser, String newpass) throws Exception{
-        //check if password has length > 8 and has one special character
         if (!newpass.matches(".*[!@#$%^&*()_+].*") || newpass.length() < 8) {
             throw new Exception("Password must be 8 or more characters long with a special character");
         }
-        // Generate salt
         byte[] saltBytes = new byte[16];
         random.nextBytes(saltBytes);
 
@@ -369,7 +408,6 @@ public class DatabaseHandler {
                     throw new Exception("User already exists");
                 }
 
-                // insert
                 statement = connection.prepareStatement(Queries.REGISTER_SQL);
                 statement.setString(1, newuser);
                 statement.setString(2, passhash);
@@ -395,15 +433,12 @@ public class DatabaseHandler {
         random.nextBytes(saltBytes);
 
         String usersalt ;
-//                = encodeHex(saltBytes, 32); // salt
         String passhash ;
-//                = getHash(password, usersalt); // hashed password
 
         PreparedStatement statement;
         try (Connection connection = DriverManager.getConnection(uri, username, password)) {
             System.out.println("dbConnection successful");
             try {
-                //check if user exists
                 statement = connection.prepareStatement(Queries.CHECK_EXISTING_USER_SQL);
                 statement.setString(1, user_input);
                 ResultSet rs = statement.executeQuery();
@@ -411,7 +446,6 @@ public class DatabaseHandler {
                     System.out.println("User does not exist");
                     throw new Exception("User does not exist");
                 }   else{
-                    // print out the user's password hash and salt
                     System.out.println("User: " + rs.getString("username"));
 
                     passhash = rs.getString("password");
@@ -422,7 +456,6 @@ public class DatabaseHandler {
                     System.out.println("Salt: " + usersalt);
                 }
 
-                //check if password is correct by creating verifyPassHash
                 String verifyPassHash = getHash(pass_input, usersalt);
 
                 statement = connection.prepareStatement(Queries.LOGIN_SQL);

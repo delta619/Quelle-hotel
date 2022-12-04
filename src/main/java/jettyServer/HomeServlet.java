@@ -25,8 +25,7 @@ public class HomeServlet extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
         PrintWriter out = response.getWriter();
 
-        HttpSession session = request.getSession();
-        String loggedUser = (String) session.getAttribute("loggedUser");
+        String loggedUser = Helper.getLoggedUser(request.getSession());
 
 //        if(loggedUser == null){
 //            response.sendRedirect("/register");
@@ -34,10 +33,10 @@ public class HomeServlet extends HttpServlet {
 
         VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
         VelocityContext context = new VelocityContext();
-        context.put("loggedUser", "ash"); //TODO: change this to loggedUser
+        context.put("loggedUser", loggedUser);
         ThreadSafeHotelHandler hotelData = (ThreadSafeHotelHandler) request.getServletContext().getAttribute("hotelController");
         ArrayList<Hotel> favHotels  = new ArrayList<>();
-        ArrayList<String> favList = DatabaseHandler.getInstance().getFavHotels("ash"); //TODO: change this to loggedUser
+        ArrayList<String> favList = DatabaseHandler.getInstance().getFavHotels(loggedUser);
         for(String fav : favList){
             favHotels.add(hotelData.findHotelId(fav));
         }

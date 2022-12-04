@@ -125,7 +125,7 @@ public class FileProcessor {
                     JsonObject review = e.getAsJsonObject();
                     String hotelId = review.get("hotelId").getAsString();
                     String reviewId = review.get("reviewId").getAsString();
-                    double ratingOverall = review.get("ratingOverall").getAsDouble();
+                    int ratingOverall = review.get("ratingOverall").getAsInt();
                     String title = review.get("title").getAsString();
                     String reviewText = review.get("reviewText").getAsString();
                     String nickname = review.get("userNickname").getAsString();

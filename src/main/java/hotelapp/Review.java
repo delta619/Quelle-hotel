@@ -5,12 +5,12 @@ import com.google.gson.JsonObject;
 public class Review implements Comparable<Review> {
     private String hotelId;
     private String reviewId;
-    private double ratingOverall;
+    private int ratingOverall;
     private String title;
     private String reviewText;
     private String userNickname;
     private String reviewSubmissionDate;
-    public Review(String hotelId, String reviewId, double ratingOverall, String title, String reviewText, String userNickname, String reviewSubmissionDate){
+    public Review(String hotelId, String reviewId, int ratingOverall, String title, String reviewText, String userNickname, String reviewSubmissionDate){
         this.hotelId = hotelId;
         this.reviewId = reviewId;
         this.ratingOverall = ratingOverall;
@@ -57,7 +57,7 @@ public class Review implements Comparable<Review> {
 
     }
 
-    public double getRatingOverall() {
+    public int getRatingOverall() {
         return ratingOverall;
     }
 
@@ -81,12 +81,12 @@ public class Review implements Comparable<Review> {
     public JsonObject toJson(){
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("reviewId", this.getReviewId());
-        jsonObject.addProperty("title", this.getTitle());
+        jsonObject.addProperty("reviewTitle", this.getTitle());
         jsonObject.addProperty("hotelId", this.getHotelId());
-        jsonObject.addProperty("user", this.getUserNickname());
-        jsonObject.addProperty("ratingOverall", this.getRatingOverall());
+        jsonObject.addProperty("userNickname", this.getUserNickname());
+        jsonObject.addProperty("reviewRating", this.getRatingOverall());
         jsonObject.addProperty("reviewText", this.getReviewText());
-        jsonObject.addProperty("date", this.getReviewSubmissionDate());
+        jsonObject.addProperty("reviewDate", this.getReviewSubmissionDate());
         return jsonObject;
     }
     @Override

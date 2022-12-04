@@ -47,7 +47,6 @@ public class Helper {
      * @param outputFile the output file name.
      * */
     public static void createOutputFiles(String outputFile){
-        // if outputfile has a directory, create the directory
         String[] path = outputFile.split("/");
         String dir = "";
         for(int i = 0; i < path.length - 1; i++){

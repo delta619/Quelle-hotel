@@ -64,38 +64,41 @@ public class HotelServer {
 	 * @param hotelHandler hotelHandler
 	 * @param reviewHandler reviewHandler
 	 * */
-//	public static void processUserQueries(ThreadSafeHotelHandler hotelHandler, ThreadSafeReviewHandler reviewHandler){
-//		try{
-//			Scanner sc = new Scanner(System.in);
-//			do{
-//				System.out.println("\nPlease enter any of the below instructions.\nfind <hotelID>, findReviews <hotelID>, findWord <word>  or press Q to quit.");
-//				String[] instruction = sc.nextLine().split(" ");
-//				if(instruction.length == 2){
-//					switch (instruction[0]){
-//						case "f":
-//							hotelHandler.displayHotel(hotelHandler.findHotelId(instruction[1]));
-//							break;
-//						case "r":
-//							ReviewHandler.displayReviews(reviewHandler.findReviewsByHotelId(instruction[1], false));
-//							break;
-//						case "w":
-//							reviewHandler.findWords(instruction[1]);
-//							break;
-//						default:
-//							System.out.println("Please enter a valid instruction.");
-//					}
-//				}else {
-//					if(instruction.length == 1 && instruction[0].equalsIgnoreCase("q")){
-//						System.out.println("Good bye.");
-//						return;
-//					}
-//					System.out.println("Please enter a valid instruction.");
-//				}
-//			}while(true);
-//		} catch (Exception e){
-//			System.out.println("Something went wrong: " + e.getMessage());
-//		}
-//	}
+	/*
+	public static void processUserQueries(ThreadSafeHotelHandler hotelHandler, ThreadSafeReviewHandler reviewHandler){
+		try{
+			Scanner sc = new Scanner(System.in);
+			do{
+				System.out.println("\nPlease enter any of the below instructions.\nfind <hotelID>, findReviews <hotelID>, findWord <word>  or press Q to quit.");
+				String[] instruction = sc.nextLine().split(" ");
+				if(instruction.length == 2){
+					switch (instruction[0]){
+						case "f":
+							hotelHandler.displayHotel(hotelHandler.findHotelId(instruction[1]));
+							break;
+						case "r":
+							ReviewHandler.displayReviews(reviewHandler.findReviewsByHotelId(instruction[1], false));
+							break;
+						case "w":
+							reviewHandler.findWords(instruction[1]);
+							break;
+						default:
+							System.out.println("Please enter a valid instruction.");
+					}
+				}else {
+					if(instruction.length == 1 && instruction[0].equalsIgnoreCase("q")){
+						System.out.println("Good bye.");
+						return;
+					}
+					System.out.println("Please enter a valid instruction.");
+				}
+			}while(true);
+		} catch (Exception e){
+			System.out.println("Something went wrong: " + e.getMessage());
+		}
+	}
+	 */
+
 
 	/** This method is responsible for handling the command line argument passed.
 	 * @param args the current filepath of review json file

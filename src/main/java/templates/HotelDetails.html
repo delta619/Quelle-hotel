@@ -85,6 +85,30 @@
     </script>
     <style>
 
+    .card {
+        transition: all 0.3s;
+    }
+
+
+    .card {
+        margin: 10px;
+    }
+
+    .card-body {
+        padding: 0.5rem;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+    }
+
+    .card-text {
+        font-size: 1.2rem;
+    }
+
+
+
+
     #map { height: 250px;
         width: 100%;}
 
@@ -143,7 +167,7 @@
                 <h4 class="modal-title" id="exampleModalLabel">Add new Review</h4>
             </div>
             <div class="modal-body">
-                <form action="/hotelInfo?hotelId=$hotelId" method="post">
+                <form action="/review?hotelId=$hotelId" method="post">
                     <div class="form-group">
                         <label for="reviewTitle">Review Title:</label>
                         <input type="text" class="form-control" id="reviewTitle" name="reviewTitle">
@@ -159,7 +183,7 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="add">Submit</button>
                     </div>
 
                 </form>
@@ -189,8 +213,10 @@
             <h5>Hello, $loggedUser </h5>
             #end
         </div>
-        <div class="col-lg-2">
-            <div id="map"></div>
+        <div id="map_location" class="col-lg-2">
+            <a id="show_map" href="javascript:showMap();">Show map</a>
+            <a id="hide_map" hidden href="javascript:hideMap();">Hide map</a>
+
         </div>
     </div>
 </div>
@@ -199,81 +225,171 @@
     <hr>
     <button class="btn btn-primary" value="Add a review" data-toggle="modal" data-target="#addReviewModal">Add a review</button>
     <hr>
-    <h2>Reviews</h2>
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                    <span class="sr-only">Previous</span>
-                </a>
-            </li>
-            #foreach( $i in [1..$totalPages] )
-                <li class="page-item"><a class="page-link" href="/hotelInfo?hotelId=$hotelId&page=$i">$i</a></li>
-            #end
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                    <span class="sr-only">Next</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-    #foreach($review in $reviews)
-            <div class="card m-4">
-                <div class="card-header">
-                    $review.getReviewId() by $review.getUserNickname()
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title"> $review.getTitle()</h5>
-                    <p class="card-text">$review.getReviewText()</p>
-                </div>
 
-<!--                <div id="likesCounter-$review.getReviewId()" class="card-footer text-muted text-right">-->
-<!--                    <span id="likes-$review.getReviewId()">$review.getLikes()</span> users found this review helpful-->
-<!--                    #if($review.getLiked())-->
-<!--                        <button id="unlike-$review.getReviewId()" class="btn btn-danger" onclick="unlikeReview($review.getReviewId())">Unlike</button>-->
-<!--                    #else-->
-<!--                        <button id="like-$review.getReviewId()" class="btn btn-primary" onclick="likeReview($review.getReviewId())">Like</button>-->
-<!--                    #end-->
-<!--                </div>-->
+    #if ($totalPages > 1)
+        <h2>Reviews</h2>
 
-                <div class="card-footer text-muted text-right">
-                    $review.getReviewSubmissionDate()
-                </div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                #foreach( $i in [1..$totalPages] )
+                    <li class="page-item"><a class="page-link" href="javascript:fetchReviews($i)">$i</a></li>
+                #end
 
+            </ul>
+        </nav>
+    #else
+        <h2>No Reviews</h2>
+    #end
+            <div id="reviews" class="card m-4">
             </div>
-        #end
-
-
-
 </div>
 
-
 <script>
+    function isHotelFavourite(){
 
-    fetch("/userActions?hotelId=$hotelId&action=isHotelFavourite")
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById("filledFavorite").hidden = false;
-                document.getElementById("blankFavorite").hidden = true;
-            } else {
-                document.getElementById("filledFavorite").hidden = true;
-                document.getElementById("blankFavorite").hidden = false;
-            }
-        });
+        fetch("/userActions?hotelId=$hotelId&action=isHotelFavourite")
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("filledFavorite").hidden = false;
+                    document.getElementById("blankFavorite").hidden = true;
+                } else {
+                    document.getElementById("filledFavorite").hidden = true;
+                    document.getElementById("blankFavorite").hidden = false;
+                }
+            });
+    }
+
+    isHotelFavourite();
+
+
+    function fetchReviews(page) {
+          fetch(`/hotelInfo?hotelId=$hotelId&page=${page}&action=fetchReviews`,{method:"POST"})
+              .then(response => response.json())
+              .then(data => {
+                  if(data.success){
+                        let reviews = document.getElementById("reviews");
+                        reviews.innerHTML = "";
+                        data.reviews.forEach(review => {
+                            let card = document.createElement("div");
+                            card.className = "card m-4";
+                            let cardHeader = document.createElement("div");
+                            cardHeader.className = "card-header";
+                            let cardBody = document.createElement("div");
+                            cardBody.className = "card-body";
+                            let cardFooter = document.createElement("div");
+                            cardFooter.className = "card-footer text-muted text-right";
+
+                            let title = document.createElement("h5");
+                            title.className = "card-title";
+                            title.innerText = review.reviewTitle;
+
+                            let reviewText = document.createElement("p");
+                            reviewText.className = "card-text";
+                            reviewText.innerText = review.reviewText;
+
+                            let userNickname = document.createElement("p");
+                            userNickname.className = "card-text";
+                            let small = document.createElement("small");
+                            small.className = "text-muted";
+                            small.innerText = "- " + review.userNickname;
+                            userNickname.appendChild(small);
+
+                            let reviewSubmissionDate = document.createElement("p");
+                            reviewSubmissionDate.className = "card-text";
+
+                            // 2016-08-16T18:38:29Z
+                            let month = review.reviewDate.substring(5,7);
+                            let day = review.reviewDate.substring(8,10);
+                            let year = review.reviewDate.substring(0,4);
+                            reviewSubmissionDate.innerText = review.reviewDate.substring(11,16) + "   " + month + "/" + day + "/" + year;
+
+                            let stars = document.createElement("div");
+                            for (let i = 0; i < review.reviewRating; i++) {
+                                let star = document.createElement("span");
+                                star.className = "star";
+                                let img = document.createElement("img");
+                                img.src = "https://img.icons8.com/ios/50/000000/star-filled.png";
+                                img.width = 20;
+                                img.height = 20;
+                                star.appendChild(img);
+                                stars.appendChild(star);
+                            }
+
+                            let edit = document.createElement("a");
+                            edit.style.cursor = "pointer";
+                            edit.href = "/review?hotelId=$hotelId&reviewId=" + review.reviewId;
+                            edit.title = "edit";
+                            edit.className = "float-right";
+                            let editImg = document.createElement("img");
+                            editImg.src = "https://img.icons8.com/ios/50/000000/edit.png";
+                            editImg.width = 20;
+                            editImg.height = 20;
+                            edit.appendChild(editImg);
+
+                            cardHeader.appendChild(stars);
+                            if (review.userNickname == "$loggedUser") {
+                                cardHeader.appendChild(edit);
+                            }
+
+                            cardBody.appendChild(title);
+                            cardBody.appendChild(reviewText);
+                            cardBody.appendChild(userNickname);
+
+                            cardFooter.appendChild(reviewSubmissionDate);
+
+                            card.appendChild(cardHeader);
+                            card.appendChild(cardBody);
+                            card.appendChild(cardFooter);
+
+                            reviews.appendChild(card);
+                        });
+
+
+    // endof if
+                  }
+              })
+    }
+
+
+    fetchReviews(1);
 
 
 
-        var map = L.map('map').setView([$hotel.getLatitude(), $hotel.getLongitude()], 16);
-        var marker = L.marker([$hotel.getLatitude(), $hotel.getLongitude()]).addTo(map);
-        marker.bindPopup("<b>$hotel.name</b>").openPopup();
+        function showMap() {
 
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
+            var map_location = document.getElementById('map_location');
+            var map_div = document.createElement('div');
+            map_div.id = 'map';
+            map_div.style = 'width: 100%; height: 200px;';
+            map_location.appendChild(map_div);
 
+            var map = L.map('map').setView([$hotel.getLatitude(), $hotel.getLongitude()], 16);
+            var marker = L.marker([$hotel.getLatitude(), $hotel.getLongitude()]).addTo(map);
+            marker.bindPopup("<b>$hotel.name</b>").openPopup();
+
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+
+            document.getElementById("show_map").hidden = true;
+            document.getElementById("hide_map").hidden = false;
+
+
+
+        }
+
+        function hideMap() {
+            var map_location = document.getElementById('map_location');
+            var map = document.getElementById('map');
+            map_location.removeChild(map);
+
+            document.getElementById("show_map").hidden = false;
+            document.getElementById("hide_map").hidden = true;
+
+
+        }
 
 </script>
 

@@ -1,13 +1,17 @@
 package db;
 
 public class Queries {
-    public static final String INSERT_REVIEW = "INSERT INTO reviews (hotelId, reviewId, reviewTitle, reviewText, reviewRating, userNickname, reviewDate) VALUES (?, ?, ?, ?, ?, ?, ?);";
-    public static final String UPDATE_REVIEW = "UPDATE Reviews SET reviewText = ?, rating = ? WHERE reviewId = ?;";
-    public static final String DELETE_REVIEW = "DELETE FROM Reviews WHERE reviewId = ?;";
-    public static final String GET_HOTEL_BY_ID = "SELECT * FROM hotels WHERE id = ?;";
-    public static final String GET_REVIEWS_BY_HOTEL_ID  = "SELECT * FROM reviews WHERE hotelId = ?;";
 
-    public static final String GET_REVIEWS_BY_REVIEW_ID = "SELECT * FROM reviews WHERE reviewId = ?;";
+    public static final String GET_REVIEWS_COUNT_USING_HOTEL_ID = "SELECT COUNT(*) as totalReviewsCount FROM reviews WHERE hotelId = ?";
+    public static final String GET_AVG_RATING = "SELECT avg(reviewRating) as avgRating from reviews where hotelId = ?;";
+    public static final String INSERT_REVIEW = "INSERT INTO reviews (hotelId, reviewId, reviewTitle, reviewText, reviewRating, userNickname, reviewDate) VALUES (?, ?, ?, ?, ?, ?, ?);";
+    public static final String UPDATE_REVIEW = "UPDATE reviews SET reviewTitle = ?, reviewText = ?, reviewRating = ? WHERE reviewId = ?;";
+    public static final String DELETE_REVIEW = "DELETE FROM reviews WHERE reviewId = ?;";
+    public static final String GET_HOTEL_BY_ID = "SELECT * FROM hotels WHERE id = ?;";
+
+    public static final String GET_REVIEWS_BY_HOTEL_ID = "SELECT * FROM reviews WHERE hotelId = ? ORDER BY reviewDate desc  LIMIT ? OFFSET ?;";
+
+    public static final String GET_REVIEW_USING_REVIEW_ID = "SELECT * FROM reviews WHERE reviewId = ?;";
     public static final String CREATE_USER_TABLE =
             "CREATE TABLE users (" +
                     "userid INTEGER AUTO_INCREMENT PRIMARY KEY, " +
@@ -56,7 +60,7 @@ public class Queries {
                     "reviewId VARCHAR(128) PRIMARY KEY , " +
                     "reviewTitle TEXT NOT NULL , " +
                     "reviewText TEXT NOT NULL , " +
-                    "reviewRating TEXT NOT NULL , " +
+                    "reviewRating int NOT NULL , " +
                     "userNickname TEXT NOT NULL , " +
                     "reviewDate TEXT NOT NULL );";
 

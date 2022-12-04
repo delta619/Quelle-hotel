@@ -1,6 +1,7 @@
 package jettyServer;
 import java.util.UUID;
 
+import com.google.gson.JsonArray;
 import db.DatabaseHandler;
 import hotelapp.Hotel;
 import hotelapp.Review;
@@ -23,14 +24,7 @@ public class HotelDetailsServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        HttpSession session = request.getSession();
-        String loggedUser = (String) session.getAttribute("loggedUser");
-//        if(loggedUser == null){
-//            response.sendRedirect("/register");
-//        }
-
-        response.setHeader("Access-Control-Allow-Origin", "*");
-
+        String loggedUser = Helper.getLoggedUser(request.getSession());
 
         DatabaseHandler db = (DatabaseHandler) getServletContext().getAttribute("dbController");
 
@@ -58,15 +52,7 @@ public class HotelDetailsServlet extends HttpServlet {
             return;
         }
 
-        ArrayList<Review> allReviews = db.getReviewsUsingHotelId(hotelId);
-        double sumRating = 0.0;
-        double avgRating = 0.0;
-
-        for(Review review : allReviews){
-            sumRating += review.getRatingOverall();
-        }
-        avgRating = sumRating / Math.max(1, allReviews.size());
-        avgRating = Math.round(avgRating * 100.0) / 100.0;
+        double avgRating = db.getAvgRating(hotelId);
 
 
         VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
@@ -75,7 +61,7 @@ public class HotelDetailsServlet extends HttpServlet {
         context.put("hotel", hotelDetails);
         context.put("name", hotelDetails.getName());
         context.put("hotelId", hotelDetails.getId());
-        context.put("loggedUser", "ash"); //TODO: change to loggedUser
+        context.put("loggedUser", loggedUser);
 
         context.put("avgRating", avgRating);
         context.put("link", "https://www.expedia.com/" + hotelDetails.getCity() + "-Hotels-" + hotelDetails.getName()+ ".h" + hotelId + ".Hotel-Information");
@@ -89,18 +75,12 @@ public class HotelDetailsServlet extends HttpServlet {
         // segregate reviews into pages
         int page = Integer.parseInt(pageNo);
         int pageSize = 5;
-        int totalReviews = allReviews.size();
+        int totalReviews = db.getReviewsCountUsingHotelId(hotelId);
         int totalPages = (int) Math.ceil((double) totalReviews / pageSize);
-        int start = (page - 1) * pageSize;
-        int end = Math.min(start + pageSize, totalReviews);
+        int offset = (page - 1) * pageSize;
+        int limit = pageSize;
+        ArrayList<Review> reviewsPage = db.getReviewsUsingHotelId(hotelId, offset, limit);
 
-
-        ArrayList<Review> reviewsList = new ArrayList<>(allReviews);
-        ArrayList<Review> reviewsPage = new ArrayList<>(reviewsList.subList(start, end));
-
-
-
-        // get reviews from start to end
 
         context.put("reviews", reviewsPage);
         context.put("totalPages", totalPages);
@@ -116,40 +96,42 @@ public class HotelDetailsServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        HttpSession session = request.getSession();
-        String loggedUser = (String) session.getAttribute("loggedUser");
-        if(loggedUser == null){
-            loggedUser = "ash";
-        }
 
-//        if(loggedUser == null){
-//            response.sendRedirect("/register");
-//        }
-
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        PrintWriter out = response.getWriter();
+        String loggedUser = Helper.getLoggedUser(request.getSession());
 
         String hotelId = request.getParameter("hotelId");
-        String reviewText = request.getParameter("reviewText");
-        String reviewTitle = request.getParameter("reviewTitle");
-        String reviewRating = request.getParameter("reviewRating");
-
+        String action = request.getParameter("action");
         DatabaseHandler db = (DatabaseHandler) getServletContext().getAttribute("dbController");
 
-
-        hotelId = StringEscapeUtils.escapeHtml4(hotelId);
-        reviewText = StringEscapeUtils.escapeHtml4(reviewText);
-        reviewTitle = StringEscapeUtils.escapeHtml4(reviewTitle);
-        reviewRating = StringEscapeUtils.escapeHtml4(reviewRating);
-
-        if(hotelId == null){
-            out.println(Helper.hotelResponseGenerator(false, null));
+        if(action == null){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-        String uuid = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
-        db.addReview( hotelId, uuid, reviewTitle, reviewText, reviewRating,  loggedUser, new Date().toString() );
-        response.sendRedirect("/hotelInfo?hotelId=" + hotelId);
+
+        action = StringEscapeUtils.escapeHtml4(action);
+
+
+        if(action.equals("fetchReviews")){
+            int page = Integer.parseInt(request.getParameter("page"));
+
+            int pageSize = 5;
+            int offset = (page - 1) * pageSize;
+
+            ArrayList<Review> reviewsPage = db.getReviewsUsingHotelId(hotelId, offset, pageSize);
+
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_OK);
+            PrintWriter out = response.getWriter();
+            JsonArray reviews = new JsonArray();
+            for(Review review : reviewsPage){
+                reviews.add(review.toJson());
+            }
+            out.println(Helper.reviewResponseGenerator(true, reviews));
+
+
+        }
+
+
 
     }
 
