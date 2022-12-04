@@ -30,13 +30,15 @@ public class HomeServlet extends HttpServlet {
 //        if(loggedUser == null){
 //            response.sendRedirect("/register");
 //        }
+        DatabaseHandler db = (DatabaseHandler) getServletContext().getAttribute("dbController");
 
         VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
         VelocityContext context = new VelocityContext();
         context.put("loggedUser", loggedUser);
+        context.put("history", db.getUserHistory(loggedUser));
         ThreadSafeHotelHandler hotelData = (ThreadSafeHotelHandler) request.getServletContext().getAttribute("hotelController");
         ArrayList<Hotel> favHotels  = new ArrayList<>();
-        ArrayList<String> favList = DatabaseHandler.getInstance().getFavHotels(loggedUser);
+        ArrayList<String> favList = db.getFavHotels(loggedUser);
         for(String fav : favList){
             favHotels.add(hotelData.findHotelId(fav));
         }

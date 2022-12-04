@@ -38,11 +38,13 @@ public class DatabaseHandler {
         return dbHandler;
     }
 
-
     public void CreateTables() {
         Statement statement;
         try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
             System.out.println("CREATING TABLES");
+
+            statement = dbConnection.createStatement();
+            statement.executeUpdate(Queries.CREATE_USER_TABLE);
 
             statement = dbConnection.createStatement();
             statement.executeUpdate(Queries.CREATE_HOTEL_TABLE);
@@ -52,6 +54,9 @@ public class DatabaseHandler {
 
             statement = dbConnection.createStatement();
             statement.executeUpdate(Queries.CREATE_FAVOURITE_TABLE);
+
+            statement = dbConnection.createStatement();
+            statement.executeUpdate(Queries.CREATE_HISTORY_TABLE);
 
         }
         catch (SQLException ex) {
@@ -139,7 +144,6 @@ public class DatabaseHandler {
             return false;
         }
     }
-
     public boolean isFavourite(String hotelId, String userNickname) {
         try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
             PreparedStatement statement = dbConnection.prepareStatement(Queries.IS_FAVOURITE);
@@ -327,14 +331,22 @@ public class DatabaseHandler {
         try (Connection dbConnection = DriverManager.getConnection(uri, username, password)) {
             System.out.println("initial dbConnection successful");
 
-            statement = dbConnection.createStatement();
-            statement.executeUpdate(Queries.DROP_HOTEL_TABLE);
+            if(true) {
+                statement = dbConnection.createStatement();
+                statement.executeUpdate(Queries.DROP_USER_TABLE);
 
-            statement = dbConnection.createStatement();
-            statement.executeUpdate(Queries.DROP_REVIEW_TABLE);
+                statement = dbConnection.createStatement();
+                statement.executeUpdate(Queries.DROP_HOTEL_TABLE);
 
-            statement = dbConnection.createStatement();
-            statement.executeUpdate(Queries.DROP_FAVOURITE_TABLE);
+                statement = dbConnection.createStatement();
+                statement.executeUpdate(Queries.DROP_REVIEW_TABLE);
+
+                statement = dbConnection.createStatement();
+                statement.executeUpdate(Queries.DROP_FAVOURITE_TABLE);
+
+                statement = dbConnection.createStatement();
+                statement.executeUpdate(Queries.DROP_HISTORY_TABLE);
+            }
 
         }
         catch (SQLException ex) {
@@ -477,17 +489,51 @@ public class DatabaseHandler {
 
         }
     }
-//    public static void main(String[] args) {
-//        DatabaseHandler dhandler = DatabaseHandler.getInstance();
-//        dhandler.createTable();
-//        System.out.println("created a user table ");
-//        dhandler.registerUser("luke", "lukeS1k23w");
-//        dhandler.registerUser("alex", "cat123");
-//        System.out.println("Registered alex.");
-//    }
+    public void insertHistory(String userNickname, String hotelId, String hotelName, String date) throws RuntimeException {
+        PreparedStatement statement;
+        try (Connection connection = DriverManager.getConnection(uri, username, password)) {
+            try {
+                statement = connection.prepareStatement(Queries.INSERT_HISTORY);
+                statement.setString(1, userNickname);
+                statement.setString(2, hotelId);
+                statement.setString(3, hotelName);
+                statement.setString(4, date);
+                statement.executeUpdate();
+            }
+            catch(SQLException e) {
+                System.out.println(e);
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+        catch (Exception ex) {
+            System.out.println(ex);
+            throw new RuntimeException(ex.getMessage());
+        }
+    }
+    public ArrayList<Hotel> getUserHistory(String userNickname) throws RuntimeException {
+        ArrayList<Hotel> history = new ArrayList<>();
+        PreparedStatement statement;
+        try (Connection connection = DriverManager.getConnection(uri, username, password)) {
+            try {
+                statement = connection.prepareStatement(Queries.GET_HISTORY_OF_USER);
+                statement.setString(1, userNickname);
+                ResultSet rs = statement.executeQuery();
+                while (rs.next()) {
+                    Hotel hotel = this.getHotel(rs.getString("hotelId"));
+                    history.add(hotel);
+                }
+            }
+            catch(SQLException e) {
+                System.out.println(e);
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+        catch (Exception ex) {
+            System.out.println(ex);
+            throw new RuntimeException(ex.getMessage());
+        }
+        return history;
 
-
-
-
+    }
 }
 

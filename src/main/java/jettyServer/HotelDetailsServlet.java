@@ -44,6 +44,9 @@ public class HotelDetailsServlet extends HttpServlet {
             return;
         }
 
+        // log the hotel user history
+
+
 
         Hotel hotelDetails = db.getHotel(hotelId);
 
@@ -52,7 +55,11 @@ public class HotelDetailsServlet extends HttpServlet {
             return;
         }
 
+        db.insertHistory( loggedUser, hotelDetails.getId(), hotelDetails.getName(), Helper.getCurrentDate());
+
+
         double avgRating = db.getAvgRating(hotelId);
+        avgRating = Math.round(avgRating * 100.0) / 100.0;
 
 
         VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
@@ -62,14 +69,12 @@ public class HotelDetailsServlet extends HttpServlet {
         context.put("name", hotelDetails.getName());
         context.put("hotelId", hotelDetails.getId());
         context.put("loggedUser", loggedUser);
-
         context.put("avgRating", avgRating);
         context.put("link", "https://www.expedia.com/" + hotelDetails.getCity() + "-Hotels-" + hotelDetails.getName()+ ".h" + hotelId + ".Hotel-Information");
         context.put("city", hotelDetails.getCity());
 
         if(pageNo == null){
             pageNo = "1";
-
         }
 
         // segregate reviews into pages

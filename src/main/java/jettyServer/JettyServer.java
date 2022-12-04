@@ -41,7 +41,9 @@ public class JettyServer {
         handler.setAttribute("hotelController", tsHotelHandler );
         handler.setAttribute("dbController", DatabaseHandler.getInstance());
 
-        // Note: you should also create servlet classes in this package
+
+        Helper.setUpDB( tsHotelHandler,  tsReviewHandler);
+
 
         handler.addServlet(HomeServlet.class, "/home");
         handler.addServlet(RegisterServlet.class, "/register");

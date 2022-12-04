@@ -2,8 +2,14 @@ package jettyServer;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import db.DatabaseHandler;
+import hotelapp.Hotel;
+import hotelapp.Review;
+import hotelapp.ThreadSafeHotelHandler;
+import hotelapp.ThreadSafeReviewHandler;
 
 import javax.servlet.http.HttpSession;
+import java.util.StringJoiner;
 
 public class Helper {
 
@@ -31,7 +37,7 @@ public class Helper {
     /**
      * This method generates the response for the hotel servlet
      * @param success boolean that indicates if the request was successful
-     * @param jsonObject JsonObject that contains the hotel info
+     * @param jsonResponse JsonObject that contains the hotel info
      * @return JsonObject that contains the response
      */
     public static Object hotelResponseGenerator (boolean success, JsonObject jsonResponse){
@@ -49,7 +55,7 @@ public class Helper {
     /**
      * This method generates the response for the index servlet
      * @param success boolean that indicates if the request was successful
-     * @param jsonObject JsonObject that contains the word reviews info
+     * @param jsonArr JsonObject that contains the word reviews info
      * @return JsonObject that contains the response
      */
     public static Object wordResponseGenerator (boolean success, String word, JsonArray jsonArr){
@@ -111,6 +117,10 @@ public class Helper {
         return session.getAttribute("loggedUser").toString();
     }
 
+    public static String getCurrentDate(){
+        return new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
+    }
+
     //CONSTANTS
     static class CONSTANTS{
         public static final String HOME = "./src/main/java/templates/Home.html";
@@ -125,5 +135,41 @@ public class Helper {
 
     }
 
+    public static void setUpDB(ThreadSafeHotelHandler hotelData, ThreadSafeReviewHandler reviewData){
+        DatabaseHandler db = DatabaseHandler.getInstance();
+
+        db.removeAllTables();
+        db.CreateTables();
+
+        StringJoiner sj = new StringJoiner(",");
+        for(Hotel hotel: hotelData.getAllHotels()){
+            StringJoiner joiner = new StringJoiner("\",\"", "(\"", "\")");
+            joiner.add(hotel.getId());
+            joiner.add(hotel.getName());
+            joiner.add(hotel.getAddress());
+            joiner.add(hotel.getCity());
+            joiner.add(hotel.getState());
+            joiner.add(hotel.getLatitude());
+            joiner.add(hotel.getLongitude());
+            String query = joiner.toString() ;
+            sj.add(query);
+        }
+        db.addHotel(sj.toString());
+        sj = new StringJoiner(",");
+        for(Review review: reviewData.getAllReviews()){
+            StringJoiner joiner = new StringJoiner("\",\"", "(\"", "\")");
+            joiner.add(review.getHotelId());
+            joiner.add(review.getReviewId());
+            joiner.add(review.getTitle().replaceAll("\"", ""));
+            joiner.add(review.getReviewText().replaceAll("\"", "'"));
+            joiner.add(String.valueOf(review.getRatingOverall()));
+            joiner.add(review.getUserNickname().replaceAll("\"", ""));
+            joiner.add(review.getReviewSubmissionDate());
+            String query = joiner.toString() ;
+            sj.add(query);
+        }
+        db.loadReviews(sj.toString());
+
+    }
 
 }
