@@ -72,22 +72,31 @@ background-color:#545454;
     </style>
     <script>
 
-<!--function validateForm() {-->
-
-
-<!--  var username=document.forms["loginEmail"]["username"].value;-->
-<!--  var passowrd=document.forms["loginEmail"]["password"].value;-->
-
-
-<!--  if ((username == "KeithSimpson") && (password == "KeithSimpson10")) {-->
-<!--           window.location.href = 'inbox.html';-->
-<!--            return false;-->
-<!--        }-->
-<!--        else {-->
-<!--            alert ("Login unsuccessful.");-->
-<!--        }-->
-
-<!--}-->
+        function register(){
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            let regex = /^(?=.*[@$!#%()*?&])[A-Za-z\d@$!%#()*?&]{8,}$/;
+            if(!regex.test(password)){
+                document.getElementById("error").innerText = "Your password must contain at least one special character and be at least 8 characters long";
+                return;
+            }
+            fetch("/register", {
+                method: "post",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: "username=" + username + "&password=" + password
+            })
+            .then(response => response.json())
+            .then(response => {
+                if(response.success){
+                    window.location.href = "/home";
+                } else {
+                console.log(response.message)
+                document.getElementById("error").innerText = response.message;
+                }
+            });
+        }
     </script>
 
 </head>
@@ -98,19 +107,20 @@ background-color:#545454;
         <h1>Register your account below:</h1>
     </div>
 
-    <form name="register" action="/register" method="post">
+    <div>
 
         <ul>
-            <li>USERNAME: <input class="username" type="text" name="username">
+            <li>USERNAME: <input class="username" id="username" type="text" name="username">
             </li>
 
-            <li>PASSWORD: <input class="password" type="text" name="password">
+            <li>PASSWORD: <input class="password" id="password" type="password" name="password">
             </li>
         </ul>
 
-        <input class="submit" type="submit" value="REGISTER">
+        <button style="cursor:pointer;" class="submit" onclick="register()"  value="REGISTER">Register</button>
 
-    </form>
+    </div>
+    <h3 id="error" style="color:red;text-align:center"></h3>
     <div class=" row">
         <p>Already have an account? <a href="/login">Signin</a></p>
     </div>

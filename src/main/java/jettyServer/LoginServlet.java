@@ -24,49 +24,34 @@ public class LoginServlet extends HttpServlet {
 
         VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
         VelocityContext context = new VelocityContext();
-
         Template template = ve.getTemplate(Helper.CONSTANTS.LOGIN);
-
         StringWriter writer = new StringWriter();
-
         template.merge(context, writer);
-
         out.println(writer.toString());
 
 
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/html");
+        response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
+
         PrintWriter out = response.getWriter();
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        DatabaseHandler dhandler = DatabaseHandler.getInstance();
+        System.out.println("username: " + username);
+        System.out.println("password: " + password);
+
+        DatabaseHandler db = (DatabaseHandler) request.getServletContext().getAttribute("dbController");
         try {
-            dhandler.loginUser(username, password);
+            db.loginUser(username, password);
+            HttpSession session = request.getSession();
+            session.setAttribute("loggedUser", username);
+            out.println(Helper.userSuccessResponseGenerator(null));
         } catch (Exception e) {
-            VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
-            VelocityContext context = new VelocityContext();
-            context.put("error", e.getMessage());
-
-            Template template = ve.getTemplate(Helper.CONSTANTS.LOGIN_FAILED);
-
-            StringWriter writer = new StringWriter();
-
-            template.merge(context, writer);
-
-            out.println(writer.toString());
-            return;
+            out.println(Helper.failedResponseGenerator(e.getMessage()));
         }
-        // redirect to homepage after a successful login post
-        HttpSession session = request.getSession();
-        session.setAttribute("loggedUser", username);
-
-        response.sendRedirect("/home");
-
-
     }
 }

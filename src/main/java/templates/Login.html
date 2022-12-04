@@ -5,7 +5,7 @@
     <link href='https://fonts.googleapis.com/css?family=Slabo+27px' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Homenaje' rel='stylesheet' type='text/css'>
-    <title>Title</title>
+    <title>Login</title>
 
     <style>
         *{
@@ -48,7 +48,8 @@ font-family: 'Homenaje', sans-serif;
 body{
   background-color:#D4CCC5;
 }
-.submit{
+button{
+cursor:pointer;
 background-color:transparent;
   color:black;
   border:1px solid black;
@@ -71,23 +72,30 @@ background-color:#545454;
 
     </style>
     <script>
+        function login(){
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            console.log("username = " + username);
+            console.log("password = " + password);
 
-<!--function validateForm() {-->
+            fetch("/login", {
+                method: "post",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: "username=" + username + "&password=" + password
+            })
+            .then(response => response.json())
+            .then(response => {
+                if(response.success){
+                    window.location.href = "/home";
+                } else {
+                console.log(response.message)
+                document.getElementById("error").innerText = response.message;
+                }
+            });
+        }
 
-
-<!--  var username=document.forms["loginEmail"]["username"].value;-->
-<!--  var passowrd=document.forms["loginEmail"]["password"].value;-->
-
-
-<!--  if ((username == "KeithSimpson") && (password == "KeithSimpson10")) {-->
-<!--           window.location.href = 'inbox.html';-->
-<!--            return false;-->
-<!--        }-->
-<!--        else {-->
-<!--            alert ("Login unsuccessful.");-->
-<!--        }-->
-
-<!--}-->
     </script>
 
 </head>
@@ -98,19 +106,18 @@ background-color:#545454;
         <h1>Sign in to your account below:</h1>
     </div>
 
-    <form name="login" action="/login" method="post">
-
+    <div >
         <ul>
-            <li>USERNAME: <input class="username" type="text" name="username">
+            <li>USERNAME: <input class="username" id="username" type="text" name="username">
             </li>
-
-            <li>PASSWORD: <input class="password" type="text" name="password">
+            <li>PASSWORD: <input class="password" id="password" type="password" name="password">
             </li>
         </ul>
 
-        <input class="submit" type="submit" value="LOGIN">
+        <button onclick="login()">Login</button>
 
-    </form>
+    </div>
+        <h3 id="error" style="color:red;text-align:center"></h3>
     <div class=" row">
         <p>Don't have an account? <a href="/register">Register</a></p>
     </div>

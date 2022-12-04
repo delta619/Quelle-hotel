@@ -386,7 +386,7 @@ public class DatabaseHandler {
      * @param newpass - password of new user
      */
     public void registerUser(String newuser, String newpass) throws Exception{
-        if (!newpass.matches(".*[!@#$%^&*()_+].*") || newpass.length() < 8) {
+        if (!newpass.matches("^(?=.*[@$!%#()*?&])[A-Za-z\\d@$!()%*?#&]{8,}$")) {
             throw new Exception("Password must be 8 or more characters long with a special character");
         }
         byte[] saltBytes = new byte[16];

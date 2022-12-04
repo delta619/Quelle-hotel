@@ -41,42 +41,24 @@ public class RegisterServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/html");
+        response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
+
         PrintWriter out = response.getWriter();
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-
-        DatabaseHandler dhandler = DatabaseHandler.getInstance();
-
-        // insert user into database
+        DatabaseHandler db = (DatabaseHandler) request.getServletContext().getAttribute("dbController");
 
         try {
-            dhandler.registerUser(username, password);
+            db.registerUser(username, password);
+            HttpSession session = request.getSession();
+            session.setAttribute("loggedUser", username);
+            out.println(Helper.userSuccessResponseGenerator(null));
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            VelocityEngine ve = (VelocityEngine) request.getServletContext().getAttribute("templateEngine");
-            VelocityContext context = new VelocityContext();
-
-            context.put("error", e.getMessage());
-            Template template = ve.getTemplate(Helper.CONSTANTS.REGISTER_FAILED);
-
-            StringWriter writer = new StringWriter();
-
-            template.merge(context, writer);
-
-            out.println(writer.toString());
-            return;
+            out.println(Helper.failedResponseGenerator(e.getMessage()));
         }
 
-        HttpSession session = request.getSession();
-        session.setAttribute("loggedUser", username);
-
-        // loggedUser is  not null then redirect to home page or show a failed registration page
-        response.sendRedirect("/home");
-
     }
-
 }
