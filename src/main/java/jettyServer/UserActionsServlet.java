@@ -67,9 +67,9 @@ public class UserActionsServlet extends HttpServlet {
             } else if ("removeAllFavHotels".equals(action)) {
                 db.removeAllFavourites(loggedUser);
                 out.println(Helper.userSuccessResponseGenerator(null));
-            } else if ("login".equals(action)){
-                String username = request.getParameter("username");
-                String password = request.getParameter("password");
+            }  else if ("removeAllHistory".equals(action)) {
+                db.removeUserHistory(loggedUser);
+                out.println(Helper.userSuccessResponseGenerator(null));
 
             }
         }

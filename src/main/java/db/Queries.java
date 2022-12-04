@@ -4,7 +4,7 @@ public class Queries {
 
     public static final String INSERT_HISTORY = "INSERT INTO history (userNickname, hotelId, hotelName, timestamp) VALUES (?, ?, ?, ?);";
     public static final String GET_HISTORY_OF_USER = "SELECT * FROM history WHERE userNickname = ? ORDER BY timestamp DESC;";
-
+    public static final String REMOVE_USER_HISTORY = "DELETE FROM history WHERE userNickname = ?;";
 
     public static final String GET_REVIEWS_COUNT_USING_HOTEL_ID = "SELECT COUNT(*) as totalReviewsCount FROM reviews WHERE hotelId = ?";
     public static final String GET_AVG_RATING = "SELECT avg(reviewRating) as avgRating from reviews where hotelId = ?;";
@@ -27,6 +27,7 @@ public class Queries {
                     "userid INTEGER AUTO_INCREMENT PRIMARY KEY, " +
                     "username VARCHAR(32) NOT NULL UNIQUE, " +
                     "password CHAR(64) NOT NULL, " +
+                    "lastLogin CHAR(64) , " +
                     "usersalt CHAR(32) NOT NULL);";
 
     public static final String CREATE_HOTEL_TABLE =
@@ -101,14 +102,17 @@ public class Queries {
             "DROP TABLE users;";
 
     /** Used to insert a new user into the database. */
-    public static final String REGISTER_SQL =
-            "INSERT INTO users (username, password, usersalt) " +
-                    "VALUES (?, ?, ?);";
-
     public static final String CHECK_EXISTING_USER_SQL =
             "SELECT username, password, usersalt FROM users WHERE username = ?";
 
+    public static final String REGISTER_SQL =
+            "INSERT INTO users (username, password, usersalt) " +
+                    "VALUES (?, ?, ?);";
     public static final String LOGIN_SQL =
             "SELECT username FROM users WHERE username = ? AND password = ?";
 
+    public static final String INSERT_LAST_LOGIN =
+            "UPDATE users SET lastLogin = ? WHERE username = ?";
+    public static final String GET_LAST_LOGIN =
+            "SELECT lastLogin FROM users WHERE username = ? order by lastLogin desc limit 1";
 }

@@ -14,6 +14,15 @@
 
     <style>
 
+    .last-login {
+    position: fixed;
+    bottom: 0;
+    right: 10px;
+    font-size: 1em;
+    color: #555;
+}
+
+
     #favourites_box, #history_box {
         // position sticky
         position: -webkit-sticky;
@@ -63,15 +72,21 @@
         <ul class="nav navbar-nav navbar-right">
             <li><a href="/logout" ><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
         </ul>
+
     </div>
 </nav>
 
 
 <div class="jumbotron text-center">
-    <h1>WELCOME </h1>
-    #if($loggedUser != "Anonymous")
-      <h5>Hello, $loggedUser </h5>
-    #end
+    <h1>WELCOME
+        #if($loggedUser != "Anonymous")
+            <i>$loggedUser</i>
+        #end
+    </h1>
+
+
+
+
 </div>
 <div class="container">
 
@@ -85,7 +100,7 @@
         <div id="history_box" class="col-lg-3">
             #if ($history.size() > 0)
             <ul id="historyList">
-                 <span> <h3>History <span style="cursor: pointer" class="glyphicon glyphicon-remove" onclick="removeAllFavHotels()"> </span></h3>
+                 <span> <h3>History <span style="cursor: pointer" class="glyphicon glyphicon-remove" onclick="removeAllHistory()"> </span></h3>
             </span>
                 #foreach($hotel in $history)
                     <a href="/hotelInfo?hotelId=$hotel.id"><li id="$hotel.idx">$hotel.name</li></a>
@@ -127,10 +142,13 @@
 
     </div>
 </div>
+
+<div class="last-login">
+    Last Login : $lastLogin
+</div>
 <script>
 
         function removeAllFavHotels(){
-
             var r = confirm("Are you sure you want to remove all favourite hotels?");
             if (r == true) {
                     fetch("/userActions?action=removeAllFavHotels", {
@@ -158,6 +176,39 @@
                     console.log(error);
                 });
             }
+        }
+
+        function removeAllHistory(){
+
+            var r = confirm("Are you sure you want to remove your history?");
+            if (r == true) {
+                    fetch("/userActions?action=removeAllHistory", {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                }).then(function (response) {
+                    return response.json();
+                }).then(function (data) {
+                    console.log(data);
+                    if(data.success){
+                    // remove list items
+                    var list = document.getElementById("historyList");
+                    while (list.hasChildNodes()) {
+                        list.removeChild(list.firstChild);
+                    }
+                    // add no favourites
+                    var noHis = document.createElement("h3");
+                    noHis.innerHTML = "No History";
+                    list.appendChild(noHis);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
+
+
         }
 
 

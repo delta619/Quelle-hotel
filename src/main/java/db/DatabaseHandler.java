@@ -535,5 +535,68 @@ public class DatabaseHandler {
         return history;
 
     }
+    public boolean removeUserHistory(String userNickame){
+        PreparedStatement statement;
+        try (Connection connection = DriverManager.getConnection(uri, username, password)) {
+            try {
+                statement = connection.prepareStatement(Queries.REMOVE_USER_HISTORY);
+                statement.setString(1, userNickame);
+                statement.executeUpdate();
+                return true;
+            }
+            catch(SQLException e) {
+                System.out.println(e);
+                return false;
+            }
+        }
+        catch (Exception ex) {
+            System.out.println(ex);
+            return false;
+        }
+
+    }
+    public String getLastLogin(String userNickname) throws RuntimeException {
+        String lastLogin = "";
+        PreparedStatement statement;
+        try (Connection connection = DriverManager.getConnection(uri, username, password)) {
+            try {
+                statement = connection.prepareStatement(Queries.GET_LAST_LOGIN);
+                statement.setString(1, userNickname);
+                ResultSet rs = statement.executeQuery();
+                if (rs.next()) {
+                    lastLogin = rs.getString("lastLogin");
+                }
+            }
+            catch(SQLException e) {
+                System.out.println(e);
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+        catch (Exception ex) {
+            System.out.println(ex);
+            throw new RuntimeException(ex.getMessage());
+        }
+        return lastLogin;
+    }
+
+    public void insertLastLogin(String userNickname, String currentTimestamp) throws RuntimeException {
+        PreparedStatement statement;
+        try (Connection connection = DriverManager.getConnection(uri, username, password)) {
+            try {
+                statement = connection.prepareStatement(Queries.INSERT_LAST_LOGIN);
+                statement.setString(1, currentTimestamp);
+                statement.setString(2, userNickname);
+                statement.executeUpdate();
+            }
+            catch(SQLException e) {
+                System.out.println(e);
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+        catch (Exception ex) {
+            System.out.println(ex);
+            throw new RuntimeException(ex.getMessage());
+        }
+    }
 }
 

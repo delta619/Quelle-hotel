@@ -121,6 +121,20 @@ public class Helper {
         return new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
     }
 
+    public static String getReadableTime(String timestamp){
+        if(timestamp == null || timestamp.startsWith("First")){
+            return "First time login.";
+        }
+
+        String[] time = timestamp.split(" ");
+        String[] date = time[0].split("-");
+        String[] hour = time[1].split(":");
+        StringJoiner sj = new StringJoiner(" ");
+        sj.add(date[1] + "/" + date[2] + "/" + date[0]);
+        sj.add(hour[0] + ":" + hour[1] + ":" + hour[2]);
+        return sj.toString();
+    }
+
     //CONSTANTS
     static class CONSTANTS{
         public static final String HOME = "./src/main/java/templates/Home.html";

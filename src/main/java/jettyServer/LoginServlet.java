@@ -35,20 +35,27 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
-
+        HttpSession session = request.getSession();
         PrintWriter out = response.getWriter();
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        System.out.println("username: " + username);
-        System.out.println("password: " + password);
-
         DatabaseHandler db = (DatabaseHandler) request.getServletContext().getAttribute("dbController");
+
         try {
             db.loginUser(username, password);
-            HttpSession session = request.getSession();
+            String lastLogin = db.getLastLogin(username);
+
+            if(lastLogin ==null){
+                lastLogin = "First time login";
+            }
+
+            session.setAttribute("lastLogin", lastLogin);
             session.setAttribute("loggedUser", username);
+
+            db.insertLastLogin(username, Helper.getCurrentDate());
+
             out.println(Helper.userSuccessResponseGenerator(null));
         } catch (Exception e) {
             out.println(Helper.failedResponseGenerator(e.getMessage()));
