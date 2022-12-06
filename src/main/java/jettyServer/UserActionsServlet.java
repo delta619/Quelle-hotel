@@ -76,7 +76,7 @@ public class UserActionsServlet extends HttpServlet {
                 hotelId = StringEscapeUtils.escapeHtml4(hotelId);
                 Hotel hotelDetails = db.getHotel(hotelId);
                 db.insertHistory( loggedUser, hotelDetails.getId(), hotelDetails.getName(), Helper.getCurrentDate());
-
+                out.println(Helper.userSuccessResponseGenerator(null));
             }
         }
         catch (Exception e){
