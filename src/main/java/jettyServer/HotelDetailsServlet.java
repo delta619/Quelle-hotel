@@ -54,8 +54,6 @@ public class HotelDetailsServlet extends HttpServlet {
             return;
         }
 
-        db.insertHistory( loggedUser, hotelDetails.getId(), hotelDetails.getName(), Helper.getCurrentDate());
-
 
         double avgRating = db.getAvgRating(hotelId);
         avgRating = Math.round(avgRating * 100.0) / 100.0;

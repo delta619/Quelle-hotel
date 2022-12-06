@@ -3,6 +3,7 @@ package jettyServer;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import db.DatabaseHandler;
+import hotelapp.Hotel;
 import org.apache.commons.text.StringEscapeUtils;
 
 import javax.net.ssl.SSLSocket;
@@ -69,6 +70,12 @@ public class UserActionsServlet extends HttpServlet {
             }  else if ("removeAllHistory".equals(action)) {
                 db.removeUserHistory(loggedUser);
                 out.println(Helper.userSuccessResponseGenerator(null));
+
+            } else if ("addHistory".equals(action)) {
+                String hotelId = request.getParameter("hotelId");
+                hotelId = StringEscapeUtils.escapeHtml4(hotelId);
+                Hotel hotelDetails = db.getHotel(hotelId);
+                db.insertHistory( loggedUser, hotelDetails.getId(), hotelDetails.getName(), Helper.getCurrentDate());
 
             }
         }

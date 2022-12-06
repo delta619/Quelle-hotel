@@ -72,6 +72,7 @@
 
         function fetchWeather(){
             document.getElementById("weather").innerHTML = "Updating weather info...";
+
             fetch(`/userActions?hotelId=$hotelId&action=fetchWeather` , {
                 method: 'GET',
                 mode : 'cors',
@@ -212,7 +213,7 @@
             <a href="javascript:fetchWeather();" id="weather" >Fetch latest weather</a>
             <a href=""></a>
             <br>
-            <a href="$link">Expedia link</a>
+            <a  onclick="addHistory()" href="$link" target="_blank">Expedia link</a>
 
             #if($loggedUser != "anonymous")
             <h5>Hello, $loggedUser </h5>
@@ -253,6 +254,18 @@
 </div>
 
 <script>
+
+
+        function addHistory(){
+
+            fetch(`/userActions?action=addHistory&hotelId=$hotelId`)
+            .then(response => response.json())
+            .then(data => {
+                console.log("History tracked");
+            })
+
+        }
+
 
 let pageCounter = 1;
 let totalPages = $totalPages;
