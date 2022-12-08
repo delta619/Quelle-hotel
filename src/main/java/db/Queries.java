@@ -115,5 +115,5 @@ public class Queries {
     public static final String INSERT_LAST_LOGIN =
             "UPDATE users SET lastLogin = ? WHERE username = ?";
     public static final String GET_LAST_LOGIN =
-            "SELECT lastLogin FROM users WHERE username = ? order by lastLogin desc limit 1";
+            "SELECT lastLogin FROM users WHERE username = ? order by lastLogin desc limit 1;";
 }

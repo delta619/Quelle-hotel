@@ -75,8 +75,8 @@ public class DatabaseHandler {
 
         }
         catch (SQLException ex) {
-            System.out.println(statement.toString());
             System.out.println(ex);
+            throw new RuntimeException("Error connecting to database");
         }
     }
 

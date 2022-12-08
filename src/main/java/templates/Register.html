@@ -98,7 +98,8 @@ background-color:#545454;
             .then(response => response.json())
             .then(response => {
                 if(response.success){
-                    window.location.href = "/home";
+                    alert("Account successfully created, please login to continue.")
+                    window.location.href = "/login";
                 } else {
                 console.log(response.message)
                 document.getElementById("error").innerText = response.message;

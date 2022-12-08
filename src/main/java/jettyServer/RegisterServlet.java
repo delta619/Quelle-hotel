@@ -58,9 +58,6 @@ public class RegisterServlet extends HttpServlet {
 
         try {
             db.registerUser(username, password);
-            HttpSession session = request.getSession();
-            session.setAttribute("loggedUser", username);
-            db.insertLastLogin(username, Helper.getCurrentDate());
             out.println(Helper.userSuccessResponseGenerator(null));
         } catch (Exception e) {
             out.println(Helper.failedResponseGenerator(e.getMessage()));

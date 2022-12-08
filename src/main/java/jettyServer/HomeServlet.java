@@ -34,7 +34,6 @@ public class HomeServlet extends HttpServlet {
         context.put("history", db.getUserHistory(loggedUser));
         context.put("lastLogin", Helper.getReadableTime((String) request.getSession().getAttribute("lastLogin")));
 
-        ThreadSafeHotelHandler hotelData = (ThreadSafeHotelHandler) request.getServletContext().getAttribute("hotelController");
         ArrayList<Hotel> favHotels  = new ArrayList<>();
         ArrayList<String> favList = db.getFavHotels(loggedUser);
         for(String favID : favList){

@@ -131,9 +131,7 @@ public class Helper {
     }
 
     public static String getReadableTime(String timestamp){
-        if(timestamp == null || timestamp.startsWith("First")){
-            return "First time login.";
-        }
+        if(timestamp == null)return null;
 
         String[] time = timestamp.split(" ");
         String[] date = time[0].split("-");
@@ -161,7 +159,7 @@ public class Helper {
     public static void setUpDB(ThreadSafeHotelHandler hotelData, ThreadSafeReviewHandler reviewData){
         DatabaseHandler db = DatabaseHandler.getInstance();
 
-        db.removeAllTables();
+//        db.removeAllTables();
         db.CreateTables();
 
         StringJoiner sj = new StringJoiner(",");

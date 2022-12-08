@@ -52,15 +52,11 @@ public class LoginServlet extends HttpServlet {
             db.loginUser(username, password);
             String lastLogin = db.getLastLogin(username);
 
-            if(lastLogin ==null){
-                lastLogin = "First time login";
+            if(lastLogin != null){
+                session.setAttribute("lastLogin", lastLogin);
             }
-
-            session.setAttribute("lastLogin", lastLogin);
             session.setAttribute("loggedUser", username);
-
             db.insertLastLogin(username, Helper.getCurrentDate());
-
             out.println(Helper.userSuccessResponseGenerator(null));
         } catch (Exception e) {
             out.println(Helper.failedResponseGenerator(e.getMessage()));
