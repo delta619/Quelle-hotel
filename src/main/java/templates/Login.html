@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link href='https://fonts.googleapis.com/css?family=Slabo+27px' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Homenaje' rel='stylesheet' type='text/css'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <title>Login</title>
 
     <style>
@@ -20,54 +21,31 @@ li{
   padding-bottom:10%;
 }
 input{
-  background-color:#545454;
-  border:none;
- border-radius:5px;
-  text-align:left;
-  color:white;
 
-}
-
-h1{
-font-family: 'Homenaje', sans-serif;
-  color:#3D352A;
 }
 
 .container{
-font-family: 'Homenaje', sans-serif;
-  border:1px grey solid;
-  width:20%;
+  width:30%;
   text-align:center;
   margin:auto;
-  background-color:white;
   padding-bottom:10px;
-     -webkit-box-shadow: 3px 0px 10px 0px black;
-  -moz-box-shadow:    3px 0px 10px 0px black;
-  box-shadow:         3px 0px 10px 0px black;
 }
-body{
-  background-color:#D4CCC5;
-}
-button{
-cursor:pointer;
+
+.submit{
 background-color:transparent;
   color:black;
   border:1px solid black;
   width:40%;
-  font-family: 'Homenaje', sans-serif;
   font-size:20px;
   transition:0.2s ease;
   text-align:center;
  }
-button:hover{
+.submit:hover{
   background-color: black;
   color:white;
   border:1px solid black;
-  font-family: 'Homenaje', sans-serif;
   font-size:20px;
-  transform: scale(1.1);
  }
-
 .password, .username{
   width:80%;
 }
@@ -110,16 +88,16 @@ button:hover{
 
     <div >
         <ul>
-            <li>USERNAME: <input class="username" id="username" type="text" name="username">
+            <li>USERNAME: <input class="username form-control" id="username" type="text" name="username">
             </li>
-            <li>PASSWORD: <input class="password" id="password" type="password" name="password">
+            <li>PASSWORD: <input class="password form-control" id="password" type="password" name="password">
             </li>
         </ul>
 
-        <button onclick="login()">Login</button>
+        <button  class="submit" onclick="login()">Login</button>
 
     </div>
-        <h3 id="error" style="color:red;text-align:center"></h3>
+        <span id="error" style="color:red;text-align:center"></span>
     <div class=" row">
         <p>Don't have an account? <a href="/register">Register</a></p>
     </div>
