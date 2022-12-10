@@ -227,8 +227,10 @@ public class DatabaseHandler {
                 String state = rs.getString("state");
                 Double latitude = rs.getDouble("lat");
                 Double longitude = rs.getDouble("lng");
+                String expediaUrl = rs.getString("expediaUrl");
 
-                return new Hotel(hotelName, hotelId, address, latitude, longitude, city, state);
+
+                return new Hotel(hotelName, hotelId, address, latitude, longitude, city, state, expediaUrl);
             }
 
         } catch (SQLException e) {
@@ -254,8 +256,10 @@ public class DatabaseHandler {
                 String state = rs.getString("state");
                 Double latitude = rs.getDouble("lat");
                 Double longitude = rs.getDouble("lng");
+                String expediaUrl = rs.getString("expediaUrl");
 
-                hotels.add(new Hotel(hotelName, hotelId, address, latitude, longitude, city, state));
+
+                hotels.add(new Hotel(hotelName, hotelId, address, latitude, longitude, city, state, expediaUrl));
             }
 
             return hotels;
@@ -359,8 +363,8 @@ public class DatabaseHandler {
             System.out.println("initial dbConnection successful");
 
             if(true) {
-                statement = dbConnection.createStatement();
-                statement.executeUpdate(Queries.DROP_USER_TABLE);
+//                statement = dbConnection.createStatement();
+//                statement.executeUpdate(Queries.DROP_USER_TABLE);
 
                 statement = dbConnection.createStatement();
                 statement.executeUpdate(Queries.DROP_HOTEL_TABLE);
@@ -516,7 +520,7 @@ public class DatabaseHandler {
 
         }
     }
-    public void insertHistory(String userNickname, String hotelId, String hotelName, String date) throws RuntimeException {
+    public void insertHistory(String userNickname, String hotelId, String hotelName, String expediaUrl, String date) throws RuntimeException {
         PreparedStatement statement;
         try (Connection connection = DriverManager.getConnection(uri, username, password)) {
             try {
@@ -524,7 +528,8 @@ public class DatabaseHandler {
                 statement.setString(1, userNickname);
                 statement.setString(2, hotelId);
                 statement.setString(3, hotelName);
-                statement.setString(4, date);
+                statement.setString(4, expediaUrl);
+                statement.setString(5, date);
                 statement.executeUpdate();
             }
             catch(SQLException e) {

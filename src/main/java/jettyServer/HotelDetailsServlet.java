@@ -67,7 +67,7 @@ public class HotelDetailsServlet extends HttpServlet {
         context.put("hotelId", hotelDetails.getId());
         context.put("loggedUser", loggedUser);
         context.put("avgRating", avgRating);
-        context.put("link", "https://www.expedia.com/" + hotelDetails.getCity() + "-Hotels-" + hotelDetails.getName()+ ".h" + hotelId + ".Hotel-Information");
+        context.put("link", hotelDetails.getExpediaUrl());
         context.put("city", hotelDetails.getCity());
 
         if(pageNo == null){

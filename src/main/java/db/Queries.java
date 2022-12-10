@@ -2,7 +2,7 @@ package db;
 
 public class Queries {
 
-    public static final String INSERT_HISTORY = "INSERT INTO history (userNickname, hotelId, hotelName, timestamp) VALUES (?, ?, ?, ?);";
+    public static final String INSERT_HISTORY = "INSERT INTO history (userNickname, hotelId, hotelName, timestamp, expediaUrl) VALUES (?, ?, ?, ?, ?);";
     public static final String GET_HISTORY_OF_USER = "SELECT * FROM history WHERE userNickname = ? ORDER BY timestamp DESC;";
     public static final String REMOVE_USER_HISTORY = "DELETE FROM history WHERE userNickname = ?;";
 
@@ -39,7 +39,8 @@ public class Queries {
                     "city TEXT , " +
                     "state TEXT , " +
                     "lat TEXT , " +
-                    "lng TEXT );";
+                    "lng TEXT ," +
+                    "expediaUrl TEXT );";
     public static final String CREATE_REVIEW_TABLE =
             "CREATE TABLE IF NOT EXISTS reviews (" +
                     "hotelId VARCHAR(128) NOT NULL, " +
@@ -60,7 +61,8 @@ public class Queries {
             + "userNickname VARCHAR(256),"
             + "hotelId TEXT,"
             + "hotelName TEXT,"
-            + "timestamp VARCHAR(256)"
+            + "timestamp VARCHAR(256),"
+            + "expediaUrl VARCHAR(256)"
             + ");";
 
 
@@ -82,7 +84,7 @@ public class Queries {
 
 
     public static final String INSERT_HOTEL_DATA =
-            "INSERT INTO hotels (id, name, address, city, state, lat, lng) " +
+            "INSERT INTO hotels (id, name, address, city, state, lat, lng, expediaUrl) " +
                     "VALUES ";
     public static final String INSERT_REVIEW_DATA =
             "INSERT INTO reviews (hotelId, reviewId, reviewTitle, reviewText, reviewRating, userNickname, reviewDate) " +

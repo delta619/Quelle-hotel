@@ -104,7 +104,7 @@
                  <span> <h3>History <span style="cursor: pointer" class="glyphicon glyphicon-remove" onclick="removeAllHistory()"> </span></h3>
             </span>
                 #foreach($hotel in $history)
-                    <a href="/hotelInfo?hotelId=$hotel.id"><li id="$hotel.idx">$hotel.name</li></a>
+                    <a href="$hotel.getExpediaUrl()" target="_blank"><li id="$hotel.idx">$hotel.name</li></a>
                 #end
             </ul>
             #else

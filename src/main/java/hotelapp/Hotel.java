@@ -21,7 +21,8 @@ public class Hotel implements Comparable<Hotel> {
         public String lat;
         public String lng;
     }
-    public Hotel(String name, String id, String address, Double lat, Double lng, String city, String state){
+    private String expediaUrl;
+    public Hotel(String name, String id, String address, Double lat, Double lng, String city, String state, String expediaUrl) {
         this.name = name;
         this.id = id;
         this.address = address;
@@ -31,7 +32,7 @@ public class Hotel implements Comparable<Hotel> {
         this.ll = new LL();
         this.ll.lat = String.valueOf(lat);
         this.ll.lng = String.valueOf(lng);
-
+        this.expediaUrl = expediaUrl;
 
     }
 
@@ -57,6 +58,10 @@ public class Hotel implements Comparable<Hotel> {
     public String getState() {
         return state;
     }
+    public String getExpediaUrl(){
+        return this.expediaUrl;
+    }
+
     @Override
     public int compareTo(Hotel hotel) {
         return getId().compareTo(hotel.getId());

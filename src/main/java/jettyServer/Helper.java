@@ -141,6 +141,9 @@ public class Helper {
         sj.add(hour[0] + ":" + hour[1] + ":" + hour[2]);
         return sj.toString();
     }
+    public static String generateExpediaLink(Hotel hotelDetails){
+        return "https://www.expedia.com/" + hotelDetails.getCity() + "-Hotels-" + hotelDetails.getName()+ ".h" + hotelDetails.getId() + ".Hotel-Information";
+    }
 
     //CONSTANTS
     static class CONSTANTS{
@@ -156,14 +159,15 @@ public class Helper {
 
     }
 
-    public static void setUpDB(ThreadSafeHotelHandler hotelData, ThreadSafeReviewHandler reviewData){
+    public static void setUpDB(ThreadSafeHotelHandler hotelData, ThreadSafeReviewHandler reviewData) {
         DatabaseHandler db = DatabaseHandler.getInstance();
 
-//        db.removeAllTables();
+        db.removeAllTables();
+
         db.CreateTables();
 
         StringJoiner sj = new StringJoiner(",");
-        for(Hotel hotel: hotelData.getAllHotels()){
+        for (Hotel hotel : hotelData.getAllHotels()) {
             StringJoiner joiner = new StringJoiner("\",\"", "(\"", "\")");
             joiner.add(hotel.getId());
             joiner.add(hotel.getName());
@@ -172,12 +176,13 @@ public class Helper {
             joiner.add(hotel.getState());
             joiner.add(hotel.getLatitude());
             joiner.add(hotel.getLongitude());
-            String query = joiner.toString() ;
+            joiner.add(Helper.generateExpediaLink(hotel));
+            String query = joiner.toString();
             sj.add(query);
         }
         db.addHotel(sj.toString());
         sj = new StringJoiner(",");
-        for(Review review: reviewData.getAllReviews()){
+        for (Review review : reviewData.getAllReviews()) {
             StringJoiner joiner = new StringJoiner("\",\"", "(\"", "\")");
             joiner.add(review.getHotelId());
             joiner.add(review.getReviewId());
@@ -186,7 +191,7 @@ public class Helper {
             joiner.add(String.valueOf(review.getRatingOverall()));
             joiner.add(review.getUserNickname().replaceAll("\"", ""));
             joiner.add(review.getReviewSubmissionDate());
-            String query = joiner.toString() ;
+            String query = joiner.toString();
             sj.add(query);
         }
         db.loadReviews(sj.toString());
