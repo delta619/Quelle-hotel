@@ -17,7 +17,7 @@ public class DatabaseHandler {
     private Random random = new Random(); // used in password  generation
 
     private static final String host = "localhost";
-    private static final String username = "root";
+    private static final String username = "user005";
     private static final String password = "password";
     private static final String port = "3306";
 
