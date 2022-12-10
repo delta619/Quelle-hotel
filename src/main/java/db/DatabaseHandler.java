@@ -16,7 +16,7 @@ public class DatabaseHandler {
     private String uri = null; // uri to connect to mysql using jdbc
     private Random random = new Random(); // used in password  generation
 
-    private static final String host = "localhost";
+    private static final String host = "db.cwej69ubtush.us-west-2.rds.amazonaws.com";
     private static final String username = "user005";
     private static final String password = "password";
     private static final String port = "3307";
