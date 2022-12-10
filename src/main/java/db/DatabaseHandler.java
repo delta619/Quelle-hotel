@@ -19,7 +19,7 @@ public class DatabaseHandler {
     private static final String host = "localhost";
     private static final String username = "user005";
     private static final String password = "password";
-    private static final String port = "33060";
+    private static final String port = "5267";
 
 
     /**
